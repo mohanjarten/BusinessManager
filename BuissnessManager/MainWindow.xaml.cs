@@ -110,75 +110,56 @@ namespace BusinessManager
 
         private void UpdateTimesheetProjectsFromService()
         {
-            // Store existing project names to preserve them
-            var existingProjectNames = new HashSet<string>(_timesheetProjects.Select(p => p.ProjectName));
+            // Don't clear the collection - instead, add/update projects individually
+            // This preserves the WPF data binding
 
-            // Clear existing timesheet projects
-            _timesheetProjects.Clear();
-
-            // Add projects from the project service to timesheet projects
+            // First, add new projects from the project service
             foreach (var project in _projectService.Projects)
             {
                 if (project.IsActive) // Only add active projects
                 {
-                    _timesheetProjects.Add(new TimesheetProject
-                    {
-                        Id = project.Id,
-                        ProjectName = project.ProjectName,
-                        Client = project.Company,
-                        Progress = project.Progress,
-                        Status = project.Status,
-                        DueDate = project.DueDate,
-                        Budget = project.Budget
-                    });
-                }
-            }
+                    // Check if this project already exists in timesheet projects
+                    var existingProject = _timesheetProjects.FirstOrDefault(p => p.ProjectName == project.ProjectName);
 
-            // Add any legacy projects that might exist in timesheet rows but not in project service
-            if (_timesheetRows != null)
-            {
-                foreach (var row in _timesheetRows)
-                {
-                    if (!string.IsNullOrEmpty(row.ProjectName) &&
-                        !_timesheetProjects.Any(p => p.ProjectName == row.ProjectName))
+                    if (existingProject == null)
                     {
-                        // Add legacy project to maintain data integrity
+                        // Add new project
                         _timesheetProjects.Add(new TimesheetProject
                         {
-                            Id = _timesheetProjects.Count + 1000, // Use high ID to avoid conflicts
-                            ProjectName = row.ProjectName,
-                            Client = "Legacy Project",
-                            Progress = "Unknown",
-                            Status = "Legacy",
-                            DueDate = "Unknown",
-                            Budget = "Unknown"
+                            Id = project.Id,
+                            ProjectName = project.ProjectName,
+                            Client = project.Company,
+                            Progress = project.Progress,
+                            Status = project.Status,
+                            DueDate = project.DueDate,
+                            Budget = project.Budget
                         });
+                    }
+                    else
+                    {
+                        // Update existing project
+                        existingProject.Id = project.Id;
+                        existingProject.Client = project.Company;
+                        existingProject.Progress = project.Progress;
+                        existingProject.Status = project.Status;
+                        existingProject.DueDate = project.DueDate;
+                        existingProject.Budget = project.Budget;
                     }
                 }
             }
 
-            // Also check all weekly timesheets for legacy projects
-            foreach (var weeklyTimesheet in _weeklyTimesheets.Values)
+            // Remove any projects that are no longer active (optional)
+            // Comment this out if you want to keep legacy projects
+            /*
+            var projectsToRemove = _timesheetProjects
+                .Where(tp => !_projectService.Projects.Any(p => p.ProjectName == tp.ProjectName && p.IsActive))
+                .ToList();
+            
+            foreach (var projectToRemove in projectsToRemove)
             {
-                foreach (var row in weeklyTimesheet)
-                {
-                    if (!string.IsNullOrEmpty(row.ProjectName) &&
-                        !_timesheetProjects.Any(p => p.ProjectName == row.ProjectName))
-                    {
-                        // Add legacy project to maintain data integrity
-                        _timesheetProjects.Add(new TimesheetProject
-                        {
-                            Id = _timesheetProjects.Count + 1000, // Use high ID to avoid conflicts
-                            ProjectName = row.ProjectName,
-                            Client = "Legacy Project",
-                            Progress = "Unknown",
-                            Status = "Legacy",
-                            DueDate = "Unknown",
-                            Budget = "Unknown"
-                        });
-                    }
-                }
+                _timesheetProjects.Remove(projectToRemove);
             }
+            */
         }
 
         private void LoadDashboardData()
@@ -1088,15 +1069,65 @@ namespace BusinessManager
     }
 
     // Simple project class for timesheet dropdown compatibility
-    public class TimesheetProject
+    // Simple project class for timesheet dropdown compatibility
+    public class TimesheetProject : INotifyPropertyChanged
     {
-        public int Id { get; set; }
-        public string ProjectName { get; set; }
-        public string Client { get; set; }
-        public string Progress { get; set; }
-        public string Status { get; set; }
-        public string DueDate { get; set; }
-        public string Budget { get; set; }
+        private int _id;
+        private string _projectName;
+        private string _client;
+        private string _progress;
+        private string _status;
+        private string _dueDate;
+        private string _budget;
+
+        public int Id
+        {
+            get => _id;
+            set { _id = value; OnPropertyChanged(nameof(Id)); }
+        }
+
+        public string ProjectName
+        {
+            get => _projectName;
+            set { _projectName = value; OnPropertyChanged(nameof(ProjectName)); }
+        }
+
+        public string Client
+        {
+            get => _client;
+            set { _client = value; OnPropertyChanged(nameof(Client)); }
+        }
+
+        public string Progress
+        {
+            get => _progress;
+            set { _progress = value; OnPropertyChanged(nameof(Progress)); }
+        }
+
+        public string Status
+        {
+            get => _status;
+            set { _status = value; OnPropertyChanged(nameof(Status)); }
+        }
+
+        public string DueDate
+        {
+            get => _dueDate;
+            set { _dueDate = value; OnPropertyChanged(nameof(DueDate)); }
+        }
+
+        public string Budget
+        {
+            get => _budget;
+            set { _budget = value; OnPropertyChanged(nameof(Budget)); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     #endregion
