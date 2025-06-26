@@ -110,6 +110,9 @@ namespace BusinessManager
 
         private void UpdateTimesheetProjectsFromService()
         {
+            // Store existing project names to preserve them
+            var existingProjectNames = new HashSet<string>(_timesheetProjects.Select(p => p.ProjectName));
+
             // Clear existing timesheet projects
             _timesheetProjects.Clear();
 
@@ -128,6 +131,52 @@ namespace BusinessManager
                         DueDate = project.DueDate,
                         Budget = project.Budget
                     });
+                }
+            }
+
+            // Add any legacy projects that might exist in timesheet rows but not in project service
+            if (_timesheetRows != null)
+            {
+                foreach (var row in _timesheetRows)
+                {
+                    if (!string.IsNullOrEmpty(row.ProjectName) &&
+                        !_timesheetProjects.Any(p => p.ProjectName == row.ProjectName))
+                    {
+                        // Add legacy project to maintain data integrity
+                        _timesheetProjects.Add(new TimesheetProject
+                        {
+                            Id = _timesheetProjects.Count + 1000, // Use high ID to avoid conflicts
+                            ProjectName = row.ProjectName,
+                            Client = "Legacy Project",
+                            Progress = "Unknown",
+                            Status = "Legacy",
+                            DueDate = "Unknown",
+                            Budget = "Unknown"
+                        });
+                    }
+                }
+            }
+
+            // Also check all weekly timesheets for legacy projects
+            foreach (var weeklyTimesheet in _weeklyTimesheets.Values)
+            {
+                foreach (var row in weeklyTimesheet)
+                {
+                    if (!string.IsNullOrEmpty(row.ProjectName) &&
+                        !_timesheetProjects.Any(p => p.ProjectName == row.ProjectName))
+                    {
+                        // Add legacy project to maintain data integrity
+                        _timesheetProjects.Add(new TimesheetProject
+                        {
+                            Id = _timesheetProjects.Count + 1000, // Use high ID to avoid conflicts
+                            ProjectName = row.ProjectName,
+                            Client = "Legacy Project",
+                            Progress = "Unknown",
+                            Status = "Legacy",
+                            DueDate = "Unknown",
+                            Budget = "Unknown"
+                        });
+                    }
                 }
             }
         }
