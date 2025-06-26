@@ -14,57 +14,13 @@ using BusinessManager.Services;
 
 namespace BusinessManager
 {
-    public MainWindow()
-    {
-        InitializeComponent();
-        InitializeData();
-        LoadDashboardData();
-        LoadTimesheetData();
-
-        // Set DataContext for binding
-        this.DataContext = this;
-
-        // Login Johan Mårtensson automatically
-        LoginUser();
-    }
-
-    private void LoginUser()
-    {
-        // Find Johan Mårtensson in the employee list and log him in
-        var johanMartensson = new Employee
-        {
-            Id = 999,
-            FirstName = "Johan",
-            LastName = "Mårtensson",
-            Email = "johan.martensson@company.com",
-            Phone = "070-555-0123",
-            Position = "Utvecklare",
-            HireDate = DateTime.Now,
-            IsActive = true,
-            EmergencyContact = "Anna Mårtensson",
-            EmergencyPhone = "070-555-0124"
-        };
-
-        // Add Johan to employee service if not exists
-        if (!_employeeService.Employees.Any(e => e.FirstName == "Johan" && e.LastName == "Mårtensson"))
-        {
-            _employeeService.AddEmployee(johanMartensson);
-        }
-        else
-        {
-            johanMartensson = _employeeService.Employees.First(e => e.FirstName == "Johan" && e.LastName == "Mårtensson");
-        }
-
-        // Login Johan
-        UserSessionService.Instance.Login(johanMartensson);
-    }
     public partial class MainWindow : Window
     {
         // Current week tracking
         private DateTime _currentWeekStart;
 
         // Data collections
-        private ObservableCollection<TimesheetProject> _timesheetProjects; // Changed from _projects
+        private ObservableCollection<TimesheetProject> _timesheetProjects;
         private ObservableCollection<TimesheetRow> _timesheetRows;
 
         // Weekly timesheet storage - Dictionary with week start date as key
@@ -75,7 +31,7 @@ namespace BusinessManager
         private ProjectService _projectService;
 
         // Public properties for binding
-        public ObservableCollection<TimesheetProject> ProjectsList => _timesheetProjects; // For timesheet dropdown
+        public ObservableCollection<TimesheetProject> ProjectsList => _timesheetProjects;
         public ObservableCollection<Employee> EmployeesList => _employeeService?.Employees;
         public ObservableCollection<Project> AllProjectsList => _projectService?.Projects;
 
@@ -88,6 +44,40 @@ namespace BusinessManager
 
             // Set DataContext for binding
             this.DataContext = this;
+
+            // Login Johan Mårtensson automatically
+            LoginUser();
+        }
+
+        private void LoginUser()
+        {
+            // Find Johan Mårtensson in the employee list and log him in
+            var johanMartensson = new Employee
+            {
+                Id = 999,
+                FirstName = "Johan",
+                LastName = "Mårtensson",
+                Email = "johan.martensson@company.com",
+                Phone = "070-555-0123",
+                Position = "Utvecklare",
+                HireDate = DateTime.Now,
+                IsActive = true,
+                EmergencyContact = "Anna Mårtensson",
+                EmergencyPhone = "070-555-0124"
+            };
+
+            // Add Johan to employee service if not exists
+            if (!_employeeService.Employees.Any(e => e.FirstName == "Johan" && e.LastName == "Mårtensson"))
+            {
+                _employeeService.AddEmployee(johanMartensson);
+            }
+            else
+            {
+                johanMartensson = _employeeService.Employees.First(e => e.FirstName == "Johan" && e.LastName == "Mårtensson");
+            }
+
+            // Login Johan
+            UserSessionService.Instance.Login(johanMartensson);
         }
 
         #region Initialization Methods
@@ -115,8 +105,8 @@ namespace BusinessManager
             // Create sample data for current week
             var currentWeekData = new ObservableCollection<TimesheetRow>
             {
-                new TimesheetRow { ProjectName = "Website Redesign", TaskName = "Ritarbete", TimeCode = "Ordinarie arbetstid", Monday = "8", Tuesday = "8", Wednesday = "6", Thursday = "", Friday = "", Saturday = "", Sunday = "" },
-                new TimesheetRow { ProjectName = "Mobile App Development", TaskName = "Beräkningar", TimeCode = "Ordinarie arbetstid", Monday = "", Tuesday = "", Wednesday = "2", Thursday = "8", Friday = "8", Saturday = "", Sunday = "" }
+                new TimesheetRow { ProjectName = "Website Redesign", TaskName = "Ritarbete", TimeCode = "Ordinarie arbetstid", EmployeeName = "Johan Mårtensson", Monday = "8", Tuesday = "8", Wednesday = "6", Thursday = "", Friday = "", Saturday = "", Sunday = "" },
+                new TimesheetRow { ProjectName = "Mobile App Development", TaskName = "Beräkningar", TimeCode = "Ordinarie arbetstid", EmployeeName = "Johan Mårtensson", Monday = "", Tuesday = "", Wednesday = "2", Thursday = "8", Friday = "8", Saturday = "", Sunday = "" }
             };
 
             // Add sample data for current week
@@ -126,8 +116,8 @@ namespace BusinessManager
             var lastWeek = _currentWeekStart.AddDays(-7);
             var lastWeekData = new ObservableCollection<TimesheetRow>
             {
-                new TimesheetRow { ProjectName = "Database Migration", TaskName = "Administration", TimeCode = "Ordinarie arbetstid", Monday = "4", Tuesday = "6", Wednesday = "8", Thursday = "8", Friday = "4", Saturday = "", Sunday = "" },
-                new TimesheetRow { ProjectName = "ERP System Setup", TaskName = "Möte", TimeCode = "Sjuk", Monday = "4", Tuesday = "2", Wednesday = "", Thursday = "", Friday = "4", Saturday = "", Sunday = "" }
+                new TimesheetRow { ProjectName = "Database Migration", TaskName = "Administration", TimeCode = "Ordinarie arbetstid", EmployeeName = "Johan Mårtensson", Monday = "4", Tuesday = "6", Wednesday = "8", Thursday = "8", Friday = "4", Saturday = "", Sunday = "" },
+                new TimesheetRow { ProjectName = "ERP System Setup", TaskName = "Möte", TimeCode = "Sjuk", EmployeeName = "Johan Mårtensson", Monday = "4", Tuesday = "2", Wednesday = "", Thursday = "", Friday = "4", Saturday = "", Sunday = "" }
             };
             _weeklyTimesheets[lastWeek] = lastWeekData;
 
@@ -135,7 +125,7 @@ namespace BusinessManager
             var nextWeek = _currentWeekStart.AddDays(7);
             var nextWeekData = new ObservableCollection<TimesheetRow>
             {
-                new TimesheetRow { ProjectName = "Mobile App Development", TaskName = "Granskning", TimeCode = "Ordinarie arbetstid", Monday = "", Tuesday = "", Wednesday = "", Thursday = "", Friday = "", Saturday = "", Sunday = "" }
+                new TimesheetRow { ProjectName = "Mobile App Development", TaskName = "Granskning", TimeCode = "Ordinarie arbetstid", EmployeeName = "Johan Mårtensson", Monday = "", Tuesday = "", Wednesday = "", Thursday = "", Friday = "", Saturday = "", Sunday = "" }
             };
             _weeklyTimesheets[nextWeek] = nextWeekData;
 
@@ -191,19 +181,6 @@ namespace BusinessManager
                     }
                 }
             }
-
-            // Remove any projects that are no longer active (optional)
-            // Comment this out if you want to keep legacy projects
-            /*
-            var projectsToRemove = _timesheetProjects
-                .Where(tp => !_projectService.Projects.Any(p => p.ProjectName == tp.ProjectName && p.IsActive))
-                .ToList();
-            
-            foreach (var projectToRemove in projectsToRemove)
-            {
-                _timesheetProjects.Remove(projectToRemove);
-            }
-            */
         }
 
         private void LoadDashboardData()
@@ -558,25 +535,6 @@ namespace BusinessManager
             TimesheetDataGrid.ScrollIntoView(newRow);
         }
 
-        private void TimesheetRow_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Monday" || e.PropertyName == "Tuesday" || e.PropertyName == "Wednesday" ||
-                e.PropertyName == "Thursday" || e.PropertyName == "Friday" || e.PropertyName == "Saturday" ||
-                e.PropertyName == "Sunday" || e.PropertyName == "EmployeeName")
-            {
-                UpdateWeekSummary();
-
-                // Only calculate Upparbetat if we have employee name and hours
-                var row = sender as TimesheetRow;
-                if (row != null && !string.IsNullOrEmpty(row.EmployeeName) && row.WeekTotalValue > 0)
-                {
-                    CalculateUpparbetatForAllProjects();
-                }
-
-                UpdateLockTooltips();
-            }
-        }
-
         private void SaveTimesheetBtn_Click(object sender, RoutedEventArgs e)
         {
             // Check for missing notes before saving
@@ -609,6 +567,9 @@ namespace BusinessManager
             // Save current timesheet to the weekly storage
             _weeklyTimesheets[_currentWeekStart] = _timesheetRows;
 
+            // Recalculate Upparbetat after saving
+            CalculateUpparbetatForAllProjects();
+
             // Here you would save to database in a real application
             var totalHours = _timesheetRows.Sum(r => r.WeekTotalValue);
             var weekDisplay = $"Week of {_currentWeekStart:MMM dd, yyyy}";
@@ -637,7 +598,7 @@ namespace BusinessManager
                 {
                     row.PropertyChanged -= TimesheetRow_PropertyChanged;
                     _timesheetRows.Remove(row);
-                    UpdateWeekSummary();
+                    UpdateWeekSummaryAndCalculateUpparbetat();
                 }
             }
         }
@@ -647,6 +608,25 @@ namespace BusinessManager
             // Allow only numbers and decimal point
             Regex regex = new Regex(@"^[0-9]*\.?[0-9]*$");
             e.Handled = !regex.IsMatch(e.Text);
+        }
+
+        private void TimesheetRow_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Monday" || e.PropertyName == "Tuesday" || e.PropertyName == "Wednesday" ||
+                e.PropertyName == "Thursday" || e.PropertyName == "Friday" || e.PropertyName == "Saturday" ||
+                e.PropertyName == "Sunday" || e.PropertyName == "EmployeeName")
+            {
+                UpdateWeekSummary();
+
+                // Only calculate Upparbetat if we have employee name and hours
+                var row = sender as TimesheetRow;
+                if (row != null && !string.IsNullOrEmpty(row.EmployeeName) && row.WeekTotalValue > 0)
+                {
+                    CalculateUpparbetatForAllProjects();
+                }
+
+                UpdateLockTooltips();
+            }
         }
 
         private void UpdateWeekSummary()
@@ -975,15 +955,12 @@ namespace BusinessManager
 
     #region Data Models
 
-    // Keep only TimesheetRow here - remove Project and Employee classes
-    // They should only exist in the Models folder
-
     public class TimesheetRow : INotifyPropertyChanged
     {
         private string _projectName;
         private string _taskName;
         private string _timeCode;
-        private string _employeeName; // Add this field
+        private string _employeeName;
         private string _monday = "";
         private string _tuesday = "";
         private string _wednesday = "";
@@ -1291,11 +1268,7 @@ namespace BusinessManager
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
     }
 
     #endregion
-
-
 }

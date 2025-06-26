@@ -22,20 +22,13 @@ namespace BusinessManager.Models
         private DateTime _createdDate;
         private bool _isActive;
         private ObservableCollection<ProjectEmployee> _assignedEmployees;
+        private decimal _upparbetat;
 
         public int Id
         {
             get => _id;
             set { _id = value; OnPropertyChanged(nameof(Id)); }
         }
-
-        public decimal Upparbetat
-        {
-            get => _upparbetat;
-            set { _upparbetat = value; OnPropertyChanged(nameof(Upparbetat)); OnPropertyChanged(nameof(UpparbetatDisplay)); }
-        }
-
-        public string UpparbetatDisplay => $"{Upparbetat:N0} kr";
 
         public string ProjectName
         {
@@ -127,11 +120,20 @@ namespace BusinessManager.Models
             set { _assignedEmployees = value; OnPropertyChanged(nameof(AssignedEmployees)); }
         }
 
+        public decimal Upparbetat
+        {
+            get => _upparbetat;
+            set { _upparbetat = value; OnPropertyChanged(nameof(Upparbetat)); OnPropertyChanged(nameof(UpparbetatDisplay)); }
+        }
+
+        public string UpparbetatDisplay => $"{Upparbetat:N0} kr";
+
         public Project()
         {
             AssignedEmployees = new ObservableCollection<ProjectEmployee>();
             CreatedDate = DateTime.Now;
             IsActive = true;
+            Upparbetat = 0;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
