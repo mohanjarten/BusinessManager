@@ -55,12 +55,33 @@ namespace BusinessManager.Services
                     Budget = "$25,000"
                 }
             };
+            
+            // Assign employees to projects with hourly rates
+            _projects[0].AssignedEmployees.Add(new ProjectEmployee
+            {
+                Employee = _employeeService.GetEmployeeByName("Johan", "Svensson"),
+                ProjectHourlyRate = 750,
+                IsSelectedForProject = true
+            });
+            _projects[0].AssignedEmployees.Add(new ProjectEmployee
+            {
+                Employee = _employeeService.GetEmployeeByName("Malin", "Lindberg"),
+                ProjectHourlyRate = 700,
+                IsSelectedForProject = true
+            });
 
-            // Assign employees to projects
-            _projects[0].AssignedEmployees.Add(_employeeService.GetEmployeeByName("Johan", "Svensson"));
-            _projects[0].AssignedEmployees.Add(_employeeService.GetEmployeeByName("Malin", "Lindberg"));
-            _projects[1].AssignedEmployees.Add(_employeeService.GetEmployeeByName("Markus", "Nilsson"));
-            _projects[1].AssignedEmployees.Add(_employeeService.GetEmployeeByName("Jon", "Eriksson"));
+            _projects[1].AssignedEmployees.Add(new ProjectEmployee
+            {
+                Employee = _employeeService.GetEmployeeByName("Markus", "Nilsson"),
+                ProjectHourlyRate = 900,
+                IsSelectedForProject = true
+            });
+            _projects[1].AssignedEmployees.Add(new ProjectEmployee
+            {
+                Employee = _employeeService.GetEmployeeByName("Jon", "Eriksson"),
+                ProjectHourlyRate = 650,
+                IsSelectedForProject = true
+            });
         }
 
         public void AddProject(Project project)

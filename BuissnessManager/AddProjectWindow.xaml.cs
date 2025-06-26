@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 using BusinessManager.Models;
 
 namespace BusinessManager
@@ -9,7 +11,7 @@ namespace BusinessManager
     public partial class AddProjectWindow : Window
     {
         private ObservableCollection<Employee> _employees;
-        private ObservableCollection<Employee> _employeeCheckList;
+        private ObservableCollection<ProjectEmployee> _projectEmployeeList;
 
         public Project Project { get; private set; }
         public bool IsEditMode { get; private set; }
@@ -33,28 +35,22 @@ namespace BusinessManager
             _employees = employees;
             IsEditMode = existingProject != null;
 
-            // Create a copy of employees for the checklist to avoid binding issues
-            _employeeCheckList = new ObservableCollection<Employee>();
+            // Create ProjectEmployee list for the checklist
+            _projectEmployeeList = new ObservableCollection<ProjectEmployee>();
             foreach (var emp in _employees)
             {
-                var employeeCopy = new Employee
+                var projectEmployee = new ProjectEmployee
                 {
-                    Id = emp.Id,
-                    FirstName = emp.FirstName,
-                    LastName = emp.LastName,
-                    Email = emp.Email,
-                    Phone = emp.Phone,
-                    Position = emp.Position,
-                    HireDate = emp.HireDate,
-                    IsActive = emp.IsActive,
-                    IsSelectedForProject = false
+                    Employee = emp,
+                    IsSelectedForProject = false,
+                    ProjectHourlyRate = 750 // Default hourly rate
                 };
-                _employeeCheckList.Add(employeeCopy);
+                _projectEmployeeList.Add(projectEmployee);
             }
 
             // Set up bindings
             AccountManagerComboBox.ItemsSource = _employees;
-            EmployeeCheckList.ItemsSource = _employeeCheckList;
+            EmployeeCheckList.ItemsSource = _projectEmployeeList;
 
             if (IsEditMode)
             {
@@ -108,18 +104,26 @@ namespace BusinessManager
                 DueDatePicker.SelectedDate = dueDate;
             }
 
-            // Mark assigned employees as selected
+            // Mark assigned employees as selected and set their hourly rates
             if (project.AssignedEmployees != null)
             {
                 foreach (var assignedEmp in project.AssignedEmployees)
                 {
-                    var checkListEmp = _employeeCheckList.FirstOrDefault(e => e.Id == assignedEmp.Id);
-                    if (checkListEmp != null)
+                    var projectEmp = _projectEmployeeList.FirstOrDefault(pe => pe.Employee.Id == assignedEmp.Employee.Id);
+                    if (projectEmp != null)
                     {
-                        checkListEmp.IsSelectedForProject = true;
+                        projectEmp.IsSelectedForProject = true;
+                        projectEmp.ProjectHourlyRate = assignedEmp.ProjectHourlyRate;
                     }
                 }
             }
+        }
+
+        private void HourlyRateTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Allow only numbers
+            Regex regex = new Regex(@"^[0-9]+$");
+            e.Handled = !regex.IsMatch(e.Text);
         }
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
@@ -144,6 +148,17 @@ namespace BusinessManager
                 MessageBox.Show("Please select an account manager.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 AccountManagerComboBox.Focus();
                 return;
+            }
+
+            // Validate selected employees have hourly rates
+            var selectedEmployees = _projectEmployeeList.Where(pe => pe.IsSelectedForProject).ToList();
+            foreach (var emp in selectedEmployees)
+            {
+                if (emp.ProjectHourlyRate <= 0)
+                {
+                    MessageBox.Show($"Please enter a valid hourly rate for {emp.FullName}.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
             }
 
             // Create or update project
@@ -177,17 +192,16 @@ namespace BusinessManager
                 Project.DueDate = DueDatePicker.SelectedDate.Value.ToString("MMM dd, yyyy");
             }
 
-            // Clear and reassign team members
+            // Clear and reassign team members with hourly rates
             Project.AssignedEmployees.Clear();
-            var selectedEmployees = _employeeCheckList.Where(e => e.IsSelectedForProject).ToList();
             foreach (var selectedEmp in selectedEmployees)
             {
-                // Find the original employee object
-                var originalEmployee = _employees.FirstOrDefault(e => e.Id == selectedEmp.Id);
-                if (originalEmployee != null)
+                Project.AssignedEmployees.Add(new ProjectEmployee
                 {
-                    Project.AssignedEmployees.Add(originalEmployee);
-                }
+                    Employee = selectedEmp.Employee,
+                    ProjectHourlyRate = selectedEmp.ProjectHourlyRate,
+                    IsSelectedForProject = true
+                });
             }
 
             // Set progress based on assigned employees and status

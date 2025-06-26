@@ -87,21 +87,44 @@
                               DisplayMemberPath="FullName" SelectedValuePath="Id"/>
 
                     <!-- Project Team -->
-                    <TextBlock Text="Project Team Members" FontWeight="SemiBold" Margin="0,0,0,10"
+                    <TextBlock Text="Projektteam" FontWeight="SemiBold" Margin="0,0,0,10"
                               Style="{StaticResource BodyTextStyle}"/>
                     <Border Background="{StaticResource SecondaryBackground}" 
                             BorderBrush="{StaticResource BorderColor}" BorderThickness="1" 
                             CornerRadius="6" Padding="15" Margin="0,0,0,15">
                         <StackPanel>
-                            <TextBlock Text="Select employees to assign to this project:" FontSize="12" 
+                            <TextBlock Text="Välj anställda och ange timpeng för detta projekt:" FontSize="12" 
                                       Foreground="{StaticResource TextSecondary}" Margin="0,0,0,10"/>
                             <ItemsControl Name="EmployeeCheckList">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <CheckBox Content="{Binding FullName}" 
-                                                  IsChecked="{Binding IsSelectedForProject, UpdateSourceTrigger=PropertyChanged}"
-                                                  Margin="0,3" FontSize="14" Padding="8,3,0,3"
-                                                  Foreground="{StaticResource TextPrimary}"/>
+                                        <Grid Margin="0,5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <CheckBox Grid.Column="0" 
+                                                      IsChecked="{Binding IsSelectedForProject, UpdateSourceTrigger=PropertyChanged}"
+                                                      VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                                            <TextBlock Grid.Column="1" Text="{Binding FullName}" 
+                                                      FontSize="14" VerticalAlignment="Center"
+                                                      Foreground="{StaticResource TextPrimary}"/>
+
+                                            <TextBox Grid.Column="2" 
+                                                     Text="{Binding ProjectHourlyRate, UpdateSourceTrigger=PropertyChanged}" 
+                                                     Width="80" Height="25" Margin="10,0,5,0"
+                                                     FontSize="12" TextAlignment="Right"
+                                                     IsEnabled="{Binding IsSelectedForProject}"
+                                                     PreviewTextInput="HourlyRateTextBox_PreviewTextInput"/>
+
+                                            <TextBlock Grid.Column="3" Text="kr/h" 
+                                                      FontSize="12" VerticalAlignment="Center"
+                                                      Foreground="{StaticResource TextSecondary}"/>
+                                        </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>

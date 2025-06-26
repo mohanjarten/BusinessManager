@@ -21,7 +21,7 @@ namespace BusinessManager.Models
         private string _budget;
         private DateTime _createdDate;
         private bool _isActive;
-        private ObservableCollection<Employee> _assignedEmployees;
+        private ObservableCollection<ProjectEmployee> _assignedEmployees;
 
         public int Id
         {
@@ -113,7 +113,7 @@ namespace BusinessManager.Models
             set { _isActive = value; OnPropertyChanged(nameof(IsActive)); }
         }
 
-        public ObservableCollection<Employee> AssignedEmployees
+        public ObservableCollection<ProjectEmployee> AssignedEmployees
         {
             get => _assignedEmployees;
             set { _assignedEmployees = value; OnPropertyChanged(nameof(AssignedEmployees)); }
@@ -121,7 +121,7 @@ namespace BusinessManager.Models
 
         public Project()
         {
-            AssignedEmployees = new ObservableCollection<Employee>();
+            AssignedEmployees = new ObservableCollection<ProjectEmployee>();
             CreatedDate = DateTime.Now;
             IsActive = true;
         }
