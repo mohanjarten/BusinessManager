@@ -270,14 +270,30 @@
                                       CanUserAddRows="False" HeadersVisibility="Column" 
                                       GridLinesVisibility="All" BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
-                                    <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="120"/>
-                                    <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="120"/>
-                                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
-                                    <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="120"/>
-                                    <DataGridTextColumn Header="Position" Binding="{Binding Position}" Width="150"/>
-                                    <DataGridTextColumn Header="Hire Date" Binding="{Binding HireDate, StringFormat=yyyy-MM-dd}" Width="100"/>
-                                    <DataGridCheckBoxColumn Header="Active" Binding="{Binding IsActive}" Width="60"/>
+                                    <DataGridTextColumn Header="Förnamn" Binding="{Binding FirstName}" Width="120"/>
+                                    <DataGridTextColumn Header="Efternamn" Binding="{Binding LastName}" Width="120"/>
+                                    <DataGridTextColumn Header="E-post" Binding="{Binding Email}" Width="200"/>
+                                    <DataGridTextColumn Header="Telefonnummer" Binding="{Binding Phone}" Width="120"/>
+                                    <DataGridTextColumn Header="Närmaste anhörig" Binding="{Binding EmergencyContact}" Width="150"/>
+                                    <DataGridTextColumn Header="Telefonnummer närmaste anhörig" Binding="{Binding EmergencyPhone}" Width="180"/>
+                                    <DataGridTemplateColumn Header="Åtgärder" Width="120">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button Content="Edit" Click="EditEmployeeBtn_Click"
+                                                            Background="{StaticResource DarkAccentColor}" 
+                                                            Foreground="{StaticResource TextOnDark}" 
+                                                            BorderThickness="0"
+                                                            Padding="5" Cursor="Hand" FontSize="11" Margin="0,0,5,0"/>
+                                                    <Button Content="Delete" Click="DeleteEmployeeBtn_Click"
+                                                            Background="{StaticResource ErrorColor}" 
+                                                            Foreground="{StaticResource TextOnDark}" 
+                                                            BorderThickness="0"
+                                                            Padding="5" Cursor="Hand" FontSize="11"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>

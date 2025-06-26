@@ -387,7 +387,42 @@ namespace BusinessManager
             }
         }
 
-        // CHANGED: This method now handles the "Create New Project" button in Projects section
+        private void EditEmployeeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var employee = button?.DataContext as Employee;
+
+            if (employee != null)
+            {
+                var editEmployeeWindow = new EditEmployeeWindow(employee);
+                if (editEmployeeWindow.ShowDialog() == true)
+                {
+                    _employeeService.UpdateEmployee(employee);
+                    MessageBox.Show($"Employee {employee.FullName} has been updated successfully!", "Employee Updated", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadEmployeesData();
+                }
+            }
+        }
+
+        private void DeleteEmployeeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var employee = button?.DataContext as Employee;
+
+            if (employee != null)
+            {
+                var result = MessageBox.Show($"Är du säker på att du vill ta bort anställd {employee.FullName}?",
+                                           "Bekräfta borttagning", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    _employeeService.DeactivateEmployee(employee.Id);
+                    MessageBox.Show($"Employee {employee.FullName} has been deactivated.", "Employee Deactivated", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadEmployeesData();
+                }
+            }
+        }
+
         private void AddProjectBtn_Click(object sender, RoutedEventArgs e)
         {
             var addProjectWindow = new AddProjectWindow(_employeeService.Employees);

@@ -1,4 +1,18 @@
-﻿using System.Windows;
+﻿using BusinessManager.Models;
+using System.Windows;
+
+private void LoadEmployeeData()
+{
+    if (Employee != null)
+    {
+        FirstNameTextBox.Text = Employee.FirstName;
+        LastNameTextBox.Text = Employee.LastName;
+        EmailTextBox.Text = Employee.Email;
+        PhoneTextBox.Text = Employee.Phone;
+        EmergencyContactTextBox.Text = Employee.EmergencyContact;
+        EmergencyPhoneTextBox.Text = Employee.EmergencyPhone;
+    }
+}
 
 private void SaveBtn_Click(object sender, RoutedEventArgs e)
 {
@@ -24,20 +38,6 @@ private void SaveBtn_Click(object sender, RoutedEventArgs e)
         return;
     }
 
-    if (string.IsNullOrWhiteSpace(PositionComboBox.Text))
-    {
-        MessageBox.Show("Position är obligatorisk.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
-        PositionComboBox.Focus();
-        return;
-    }
-
-    if (!HireDatePicker.SelectedDate.HasValue)
-    {
-        MessageBox.Show("Anställningsdatum är obligatoriskt.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
-        HireDatePicker.Focus();
-        return;
-    }
-
     // Basic email validation
     if (!EmailTextBox.Text.Contains("@"))
     {
@@ -46,16 +46,17 @@ private void SaveBtn_Click(object sender, RoutedEventArgs e)
         return;
     }
 
-    // Set properties
-    FirstName = FirstNameTextBox.Text.Trim();
-    LastName = LastNameTextBox.Text.Trim();
-    Email = EmailTextBox.Text.Trim();
-    Phone = PhoneTextBox.Text.Trim();
-    EmergencyContact = EmergencyContactTextBox.Text.Trim();
-    EmergencyPhone = EmergencyPhoneTextBox.Text.Trim();
-    Position = PositionComboBox.Text.Trim();
-    HireDate = HireDatePicker.SelectedDate.Value;
+    // Update employee properties
+    Employee.FirstName = FirstNameTextBox.Text.Trim();
+    Employee.LastName = LastNameTextBox.Text.Trim();
+    Employee.Email = EmailTextBox.Text.Trim();
+    Employee.Phone = PhoneTextBox.Text.Trim();
+    Employee.EmergencyContact = EmergencyContactTextBox.Text.Trim();
+    Employee.EmergencyPhone = EmergencyPhoneTextBox.Text.Trim();
 
     DialogResult = true;
     Close();
 }
+
+public string EmergencyContact { get; private set; }
+public string EmergencyPhone { get; private set; }

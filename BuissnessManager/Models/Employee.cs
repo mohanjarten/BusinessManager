@@ -14,6 +14,8 @@ namespace BusinessManager.Models
         private DateTime _hireDate;
         private bool _isActive;
         private bool _isSelectedForProject;
+        private string _emergencyContact;
+        private string _emergencyPhone;
 
         public int Id
         {
@@ -69,6 +71,18 @@ namespace BusinessManager.Models
         {
             get => _isSelectedForProject;
             set { _isSelectedForProject = value; OnPropertyChanged(nameof(IsSelectedForProject)); }
+        }
+
+        public string EmergencyContact
+        {
+            get => _emergencyContact;
+            set { _emergencyContact = value; OnPropertyChanged(nameof(EmergencyContact)); }
+        }
+
+        public string EmergencyPhone
+        {
+            get => _emergencyPhone;
+            set { _emergencyPhone = value; OnPropertyChanged(nameof(EmergencyPhone)); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
