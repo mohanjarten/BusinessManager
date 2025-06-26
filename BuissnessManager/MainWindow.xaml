@@ -297,40 +297,51 @@
                     </StackPanel>
 
                     <!-- Projects List -->
-                    <Border Style="{StaticResource CardStyle}">
+                    <ScrollViewer Name="ProjectsContent" Visibility="Collapsed" Padding="20">
                         <StackPanel>
-                            <TextBlock Text="All Projects" Style="{StaticResource SubheaderTextStyle}"/>
-                            <DataGrid Name="ProjectsManagementDataGrid" AutoGenerateColumns="False" 
+                            <TextBlock Text="Project Management" Style="{StaticResource HeaderTextStyle}"/>
+
+                            <!-- Project Controls -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                                <Button Name="CreateProjectBtn" Content="Create New Project" Click="AddProjectBtn_Click"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                            </StackPanel>
+
+                            <!-- Projects List -->
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="All Projects" Style="{StaticResource SubheaderTextStyle}"/>
+                                    <DataGrid Name="ProjectsManagementDataGrid" AutoGenerateColumns="False" 
                                       CanUserAddRows="False" HeadersVisibility="Column" 
                                       GridLinesVisibility="All" BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
-                                    <DataGridTextColumn Header="Project Name" Binding="{Binding ProjectName}" Width="150"/>
-                                    <DataGridTextColumn Header="Company" Binding="{Binding Company}" Width="150"/>
-                                    <DataGridTextColumn Header="Account Manager" Binding="{Binding AccountManager.FullName}" Width="120"/>
-                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
-                                    <DataGridTextColumn Header="Progress" Binding="{Binding Progress}" Width="80"/>
-                                    <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate}" Width="100"/>
-                                    <DataGridTextColumn Header="Budget" Binding="{Binding Budget}" Width="100"/>
-                                    <DataGridTemplateColumn Header="Actions" Width="80">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button Content="Edit" Click="EditProjectBtn_Click"
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                                            <DataGridTextColumn Header="Project Name" Binding="{Binding ProjectName}" Width="150"/>
+                                            <DataGridTextColumn Header="Company" Binding="{Binding Company}" Width="150"/>
+                                            <DataGridTextColumn Header="Account Manager" Binding="{Binding AccountManager.FullName}" Width="120"/>
+                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                                            <DataGridTextColumn Header="Progress" Binding="{Binding Progress}" Width="80"/>
+                                            <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate}" Width="100"/>
+                                            <DataGridTextColumn Header="Budget" Binding="{Binding Budget}" Width="100"/>
+                                            <DataGridTemplateColumn Header="Actions" Width="80">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="Edit" Click="EditProjectBtn_Click"
                                                         Background="{StaticResource DarkAccentColor}" 
                                                         Foreground="{StaticResource TextOnDark}" 
                                                         BorderThickness="0"
                                                         Padding="5" Cursor="Hand" FontSize="11"/>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
-                    </Border>
-                </StackPanel>
-            </ScrollViewer>
+                    </ScrollViewer>
 
-            <!-- Time Tracking Content -->
+                    <!-- Time Tracking Content -->
             <ScrollViewer Name="TimeTrackingContent" Visibility="Collapsed" Padding="20">
                 <StackPanel>
                     <TextBlock Text="Time Tracking" Style="{StaticResource HeaderTextStyle}"/>

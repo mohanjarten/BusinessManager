@@ -97,12 +97,39 @@ namespace BusinessManager
 
             // Load current week timesheet
             LoadTimesheetForCurrentWeek();
+
+            // Update timesheet projects from project service
+            UpdateTimesheetProjectsFromService();
         }
 
         private void InitializeServices()
         {
             _employeeService = new EmployeeService();
             _projectService = new ProjectService(_employeeService);
+        }
+
+        private void UpdateTimesheetProjectsFromService()
+        {
+            // Clear existing timesheet projects
+            _timesheetProjects.Clear();
+
+            // Add projects from the project service to timesheet projects
+            foreach (var project in _projectService.Projects)
+            {
+                if (project.IsActive) // Only add active projects
+                {
+                    _timesheetProjects.Add(new TimesheetProject
+                    {
+                        Id = project.Id,
+                        ProjectName = project.ProjectName,
+                        Client = project.Company,
+                        Progress = project.Progress,
+                        Status = project.Status,
+                        DueDate = project.DueDate,
+                        Budget = project.Budget
+                    });
+                }
+            }
         }
 
         private void LoadDashboardData()
@@ -330,7 +357,8 @@ namespace BusinessManager
             }
         }
 
-        private void AddTimesheetProjectBtn_Click(object sender, RoutedEventArgs e)
+        // CHANGED: This method now handles the "Create New Project" button in Projects section
+        private void AddProjectBtn_Click(object sender, RoutedEventArgs e)
         {
             var addProjectWindow = new AddProjectWindow(_employeeService.Employees);
             if (addProjectWindow.ShowDialog() == true)
@@ -340,6 +368,9 @@ namespace BusinessManager
                 MessageBox.Show($"Project '{newProject.ProjectName}' has been created successfully!", "Project Created", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 LoadProjectsData();
+
+                // Update timesheet projects list so new project appears in timesheet dropdown
+                UpdateTimesheetProjectsFromService();
             }
         }
 
@@ -356,6 +387,9 @@ namespace BusinessManager
                     _projectService.UpdateProject(project);
                     MessageBox.Show($"Project '{project.ProjectName}' has been updated successfully!", "Project Updated", MessageBoxButton.OK, MessageBoxImage.Information);
                     LoadProjectsData();
+
+                    // Update timesheet projects list
+                    UpdateTimesheetProjectsFromService();
                 }
             }
         }
@@ -378,8 +412,16 @@ namespace BusinessManager
             LoadTimesheetForCurrentWeek();
         }
 
-        private void AddProjectBtn_Click(object sender, RoutedEventArgs e)
+        // CHANGED: This method now adds a timesheet row instead of creating a project
+        private void AddTimesheetRowBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (_timesheetProjects.Count == 0)
+            {
+                MessageBox.Show("No projects available! Please create a project first in the Projects section.",
+                               "No Projects", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var newRow = new TimesheetRow
             {
                 ProjectName = _timesheetProjects.FirstOrDefault()?.ProjectName ?? "",
