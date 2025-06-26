@@ -479,7 +479,6 @@ namespace BusinessManager
             LoadTimesheetForCurrentWeek();
         }
 
-        // CHANGED: This method now adds a timesheet row instead of creating a project
         private void AddTimesheetRowBtn_Click(object sender, RoutedEventArgs e)
         {
             if (_timesheetProjects.Count == 0)
@@ -489,12 +488,16 @@ namespace BusinessManager
                 return;
             }
 
+            // Get the first available employee as default
+            var defaultEmployee = _employeeService?.Employees?.FirstOrDefault();
+            var defaultEmployeeName = defaultEmployee?.FullName ?? "Unknown Employee";
+
             var newRow = new TimesheetRow
             {
                 ProjectName = _timesheetProjects.FirstOrDefault()?.ProjectName ?? "",
                 TaskName = "Ritarbete", // Default to first task option
                 TimeCode = "Ordinarie arbetstid", // Default to normal working time
-                EmployeeName = "Johan Svensson", // Default employee - you might want to make this selectable
+                EmployeeName = defaultEmployeeName, // Set a valid employee name
                 Monday = "",
                 Tuesday = "",
                 Wednesday = "",
@@ -506,7 +509,9 @@ namespace BusinessManager
 
             newRow.PropertyChanged += TimesheetRow_PropertyChanged;
             _timesheetRows.Add(newRow);
-            UpdateWeekSummaryAndCalculateUpparbetat(); // Updated call
+
+            // Only update summary, don't calculate Upparbetat yet (no hours entered)
+            UpdateWeekSummary();
 
             // Focus on the new row
             TimesheetDataGrid.SelectedItem = newRow;
@@ -517,9 +522,17 @@ namespace BusinessManager
         {
             if (e.PropertyName == "Monday" || e.PropertyName == "Tuesday" || e.PropertyName == "Wednesday" ||
                 e.PropertyName == "Thursday" || e.PropertyName == "Friday" || e.PropertyName == "Saturday" ||
-                e.PropertyName == "Sunday")
+                e.PropertyName == "Sunday" || e.PropertyName == "EmployeeName")
             {
-                UpdateWeekSummaryAndCalculateUpparbetat(); // Updated call
+                UpdateWeekSummary();
+
+                // Only calculate Upparbetat if we have employee name and hours
+                var row = sender as TimesheetRow;
+                if (row != null && !string.IsNullOrEmpty(row.EmployeeName) && row.WeekTotalValue > 0)
+                {
+                    CalculateUpparbetatForAllProjects();
+                }
+
                 UpdateLockTooltips();
             }
         }
@@ -596,17 +609,6 @@ namespace BusinessManager
             e.Handled = !regex.IsMatch(e.Text);
         }
 
-        private void TimesheetRow_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Monday" || e.PropertyName == "Tuesday" || e.PropertyName == "Wednesday" ||
-                e.PropertyName == "Thursday" || e.PropertyName == "Friday" || e.PropertyName == "Saturday" ||
-                e.PropertyName == "Sunday")
-            {
-                UpdateWeekSummary();
-                UpdateLockTooltips();
-            }
-        }
-
         private void UpdateWeekSummary()
         {
             var totalHours = _timesheetRows.Sum(r => r.WeekTotalValue);
@@ -656,28 +658,47 @@ namespace BusinessManager
                 WeekStatusText.Text = "Empty";
         }
 
+        private void UpdateWeekSummaryAndCalculateUpparbetat()
+        {
+            // Call the existing UpdateWeekSummary method
+            UpdateWeekSummary();
+
+            // Calculate Upparbetat for all projects
+            CalculateUpparbetatForAllProjects();
+        }
+
         private void CalculateUpparbetatForAllProjects()
         {
+            if (_timesheetProjects == null || _projectService?.Projects == null) return;
+
             foreach (var timesheetProject in _timesheetProjects)
             {
                 decimal totalUpparbetat = 0;
 
                 // Find the actual project from project service to get hourly rates
-                var actualProject = _projectService?.Projects.FirstOrDefault(p => p.ProjectName == timesheetProject.ProjectName);
-                if (actualProject == null) continue;
+                var actualProject = _projectService.Projects.FirstOrDefault(p => p.ProjectName == timesheetProject.ProjectName);
+                if (actualProject?.AssignedEmployees == null) continue;
 
                 // Calculate across all weekly timesheets
                 foreach (var weeklyTimesheet in _weeklyTimesheets.Values)
                 {
-                    var projectRows = weeklyTimesheet.Where(row => row.ProjectName == timesheetProject.ProjectName);
+                    if (weeklyTimesheet == null) continue;
+
+                    var projectRows = weeklyTimesheet.Where(row =>
+                        row != null &&
+                        !string.IsNullOrEmpty(row.ProjectName) &&
+                        row.ProjectName == timesheetProject.ProjectName);
 
                     foreach (var row in projectRows)
                     {
+                        // Skip if EmployeeName is null or empty
+                        if (string.IsNullOrEmpty(row.EmployeeName)) continue;
+
                         // Find the employee's hourly rate for this project
                         var projectEmployee = actualProject.AssignedEmployees
-                            .FirstOrDefault(pe => pe.Employee.FullName == row.EmployeeName);
+                            .FirstOrDefault(pe => pe?.Employee?.FullName == row.EmployeeName);
 
-                        if (projectEmployee != null)
+                        if (projectEmployee?.Employee != null)
                         {
                             // Calculate total hours for this row
                             var totalHours = row.WeekTotalValue;
@@ -949,6 +970,12 @@ namespace BusinessManager
         {
             get => _timeCode;
             set { _timeCode = value; OnPropertyChanged(nameof(TimeCode)); }
+        }
+
+        public string EmployeeName
+        {
+            get => _employeeName;
+            set { _employeeName = value; OnPropertyChanged(nameof(EmployeeName)); }
         }
 
         public string EmployeeName
