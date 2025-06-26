@@ -244,6 +244,16 @@
                                                         Binding="{Binding DueDate}" Width="100"/>
                                     <DataGridTextColumn Header="Budget" 
                                                         Binding="{Binding Budget}" Width="100"/>
+                                    <DataGridTextColumn Header="Upparbetat" 
+                                                        Binding="{Binding UpparbetatDisplay}" Width="120">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Right"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                <Setter Property="Foreground" Value="{StaticResource SuccessColor}"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>
@@ -442,6 +452,19 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
+                                    <!-- Employee Column -->
+                                    <DataGridTemplateColumn Header="Anställd" Width="150">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=EmployeesList}"
+                          SelectedValue="{Binding EmployeeName, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="FullName"
+                          SelectedValuePath="FullName"
+                          IsEnabled="{Binding IsNotLocked}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                   
                                     <!-- Task Column -->
                                     <DataGridTemplateColumn Header="Task" Width="150">
                                         <DataGridTemplateColumn.CellTemplate>

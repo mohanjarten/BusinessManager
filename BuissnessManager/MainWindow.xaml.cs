@@ -494,6 +494,7 @@ namespace BusinessManager
                 ProjectName = _timesheetProjects.FirstOrDefault()?.ProjectName ?? "",
                 TaskName = "Ritarbete", // Default to first task option
                 TimeCode = "Ordinarie arbetstid", // Default to normal working time
+                EmployeeName = "Johan Svensson", // Default employee - you might want to make this selectable
                 Monday = "",
                 Tuesday = "",
                 Wednesday = "",
@@ -505,11 +506,22 @@ namespace BusinessManager
 
             newRow.PropertyChanged += TimesheetRow_PropertyChanged;
             _timesheetRows.Add(newRow);
-            UpdateWeekSummary();
+            UpdateWeekSummaryAndCalculateUpparbetat(); // Updated call
 
             // Focus on the new row
             TimesheetDataGrid.SelectedItem = newRow;
             TimesheetDataGrid.ScrollIntoView(newRow);
+        }
+
+        private void TimesheetRow_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Monday" || e.PropertyName == "Tuesday" || e.PropertyName == "Wednesday" ||
+                e.PropertyName == "Thursday" || e.PropertyName == "Friday" || e.PropertyName == "Saturday" ||
+                e.PropertyName == "Sunday")
+            {
+                UpdateWeekSummaryAndCalculateUpparbetat(); // Updated call
+                UpdateLockTooltips();
+            }
         }
 
         private void SaveTimesheetBtn_Click(object sender, RoutedEventArgs e)
@@ -642,6 +654,42 @@ namespace BusinessManager
                 WeekStatusText.Text = "In Progress";
             else
                 WeekStatusText.Text = "Empty";
+        }
+
+        private void CalculateUpparbetatForAllProjects()
+        {
+            foreach (var timesheetProject in _timesheetProjects)
+            {
+                decimal totalUpparbetat = 0;
+
+                // Find the actual project from project service to get hourly rates
+                var actualProject = _projectService?.Projects.FirstOrDefault(p => p.ProjectName == timesheetProject.ProjectName);
+                if (actualProject == null) continue;
+
+                // Calculate across all weekly timesheets
+                foreach (var weeklyTimesheet in _weeklyTimesheets.Values)
+                {
+                    var projectRows = weeklyTimesheet.Where(row => row.ProjectName == timesheetProject.ProjectName);
+
+                    foreach (var row in projectRows)
+                    {
+                        // Find the employee's hourly rate for this project
+                        var projectEmployee = actualProject.AssignedEmployees
+                            .FirstOrDefault(pe => pe.Employee.FullName == row.EmployeeName);
+
+                        if (projectEmployee != null)
+                        {
+                            // Calculate total hours for this row
+                            var totalHours = row.WeekTotalValue;
+
+                            // Add to total (hours * hourly rate)
+                            totalUpparbetat += (decimal)totalHours * projectEmployee.ProjectHourlyRate;
+                        }
+                    }
+                }
+
+                timesheetProject.Upparbetat = totalUpparbetat;
+            }
         }
 
         #endregion
@@ -872,6 +920,7 @@ namespace BusinessManager
         private string _projectName;
         private string _taskName;
         private string _timeCode;
+        private string _employeeName; // Add this field
         private string _monday = "";
         private string _tuesday = "";
         private string _wednesday = "";
@@ -900,6 +949,12 @@ namespace BusinessManager
         {
             get => _timeCode;
             set { _timeCode = value; OnPropertyChanged(nameof(TimeCode)); }
+        }
+
+        public string EmployeeName
+        {
+            get => _employeeName;
+            set { _employeeName = value; OnPropertyChanged(nameof(EmployeeName)); }
         }
 
         public bool IsLocked
@@ -1106,7 +1161,6 @@ namespace BusinessManager
     }
 
     // Simple project class for timesheet dropdown compatibility
-    // Simple project class for timesheet dropdown compatibility
     public class TimesheetProject : INotifyPropertyChanged
     {
         private int _id;
@@ -1116,6 +1170,7 @@ namespace BusinessManager
         private string _status;
         private string _dueDate;
         private string _budget;
+        private decimal _upparbetat;
 
         public int Id
         {
@@ -1159,13 +1214,25 @@ namespace BusinessManager
             set { _budget = value; OnPropertyChanged(nameof(Budget)); }
         }
 
+        public decimal Upparbetat
+        {
+            get => _upparbetat;
+            set { _upparbetat = value; OnPropertyChanged(nameof(Upparbetat)); OnPropertyChanged(nameof(UpparbetatDisplay)); }
+        }
+
+        public string UpparbetatDisplay => $"{Upparbetat:N0} kr";
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+
     }
 
     #endregion
+
+
 }
