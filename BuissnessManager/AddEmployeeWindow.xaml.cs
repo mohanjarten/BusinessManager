@@ -1,61 +1,70 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
-private void SaveBtn_Click(object sender, RoutedEventArgs e)
+namespace BusinessManager
 {
-    // Validate required fields
-    if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text))
+    public partial class AddEmployeeWindow : Window
     {
-        MessageBox.Show("Förnamn är obligatoriskt.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
-        FirstNameTextBox.Focus();
-        return;
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+        public string Email { get; private set; }
+        public string Phone { get; private set; }
+        public string EmergencyContact { get; private set; }
+        public string EmergencyPhone { get; private set; }
+
+        public AddEmployeeWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void SaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // Validate required fields
+            if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text))
+            {
+                MessageBox.Show("Förnamn är obligatoriskt.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
+                FirstNameTextBox.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(LastNameTextBox.Text))
+            {
+                MessageBox.Show("Efternamn är obligatoriskt.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
+                LastNameTextBox.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(EmailTextBox.Text))
+            {
+                MessageBox.Show("E-postadress är obligatorisk.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
+                EmailTextBox.Focus();
+                return;
+            }
+
+            // Basic email validation
+            if (!EmailTextBox.Text.Contains("@"))
+            {
+                MessageBox.Show("Vänligen ange en giltig e-postadress.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
+                EmailTextBox.Focus();
+                return;
+            }
+
+            // Set properties
+            FirstName = FirstNameTextBox.Text.Trim();
+            LastName = LastNameTextBox.Text.Trim();
+            Email = EmailTextBox.Text.Trim();
+            Phone = PhoneTextBox.Text.Trim();
+            EmergencyContact = EmergencyContactTextBox.Text.Trim();
+            EmergencyPhone = EmergencyPhoneTextBox.Text.Trim();
+
+            DialogResult = true;
+            Close();
+        }
+
+        private void CancelBtn_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
     }
-
-    if (string.IsNullOrWhiteSpace(LastNameTextBox.Text))
-    {
-        MessageBox.Show("Efternamn är obligatoriskt.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
-        LastNameTextBox.Focus();
-        return;
-    }
-
-    if (string.IsNullOrWhiteSpace(EmailTextBox.Text))
-    {
-        MessageBox.Show("E-postadress är obligatorisk.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
-        EmailTextBox.Focus();
-        return;
-    }
-
-    if (string.IsNullOrWhiteSpace(PositionComboBox.Text))
-    {
-        MessageBox.Show("Position är obligatorisk.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
-        PositionComboBox.Focus();
-        return;
-    }
-
-    if (!HireDatePicker.SelectedDate.HasValue)
-    {
-        MessageBox.Show("Anställningsdatum är obligatoriskt.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
-        HireDatePicker.Focus();
-        return;
-    }
-
-    // Basic email validation
-    if (!EmailTextBox.Text.Contains("@"))
-    {
-        MessageBox.Show("Vänligen ange en giltig e-postadress.", "Valideringsfel", MessageBoxButton.OK, MessageBoxImage.Warning);
-        EmailTextBox.Focus();
-        return;
-    }
-
-    // Set properties
-    FirstName = FirstNameTextBox.Text.Trim();
-    LastName = LastNameTextBox.Text.Trim();
-    Email = EmailTextBox.Text.Trim();
-    Phone = PhoneTextBox.Text.Trim();
-    EmergencyContact = EmergencyContactTextBox.Text.Trim();
-    EmergencyPhone = EmergencyPhoneTextBox.Text.Trim();
-    Position = PositionComboBox.Text.Trim();
-    HireDate = HireDatePicker.SelectedDate.Value;
-
-    DialogResult = true;
-    Close();
 }

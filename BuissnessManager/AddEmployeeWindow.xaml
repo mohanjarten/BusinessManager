@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BusinessManager"
         mc:Ignorable="d"
-        Title="Add New Employee - p|s BusinessManager" Height="760" Width="450"
+        Title="Add New Employee - p|s BusinessManager" Height="750" Width="450"
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         ResizeMode="NoResize"
@@ -29,7 +29,7 @@
                        RenderOptions.BitmapScalingMode="HighQuality"
                        Stretch="Uniform"
                        Margin="0,0,10,0"/>
-                <TextBlock Text="Add New Employee" FontSize="20" FontWeight="Bold" 
+                <TextBlock Text="Lägg till ny anställd" FontSize="20" FontWeight="Bold" 
                           Foreground="{StaticResource TextOnDark}" VerticalAlignment="Center"/>
             </StackPanel>
         </Border>
@@ -78,10 +78,10 @@
         <Border Grid.Row="2" Background="{StaticResource PrimaryBackground}" Padding="20" 
                 BorderBrush="{StaticResource BorderColor}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Name="SaveBtn" Content="Save Employee" Click="SaveBtn_Click" 
+                <Button Name="SaveBtn" Content="Spara anställd" Click="SaveBtn_Click" 
                         Width="120" Height="35" Margin="0,0,10,0"
                         Style="{StaticResource PrimaryButtonStyle}" FontSize="14"/>
-                <Button Name="CancelBtn" Content="Cancel" Click="CancelBtn_Click" 
+                <Button Name="CancelBtn" Content="Avbryt" Click="CancelBtn_Click" 
                         Width="80" Height="35"
                         Style="{StaticResource SecondaryButtonStyle}" FontSize="14"/>
             </StackPanel>

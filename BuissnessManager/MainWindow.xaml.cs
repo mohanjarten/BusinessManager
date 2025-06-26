@@ -377,13 +377,15 @@ namespace BusinessManager
                     LastName = addEmployeeWindow.LastName,
                     Email = addEmployeeWindow.Email,
                     Phone = addEmployeeWindow.Phone,
-                    Position = addEmployeeWindow.Position,
-                    HireDate = addEmployeeWindow.HireDate,
+                    EmergencyContact = addEmployeeWindow.EmergencyContact,
+                    EmergencyPhone = addEmployeeWindow.EmergencyPhone,
+                    Position = "Anställd", // Default position in Swedish
+                    HireDate = DateTime.Now, // Default to today
                     IsActive = true
                 };
 
                 _employeeService.AddEmployee(newEmployee);
-                MessageBox.Show($"Employee {newEmployee.FullName} has been added successfully!", "Employee Added", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Anställd {newEmployee.FullName} har lagts till framgångsrikt!", "Anställd tillagd", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
