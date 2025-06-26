@@ -1,0 +1,168 @@
+﻿<Window x:Class="BusinessManager.AddProjectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BusinessManager"
+        mc:Ignorable="d"
+        Title="Create New Project - p|s BusinessManager" Height="1170" Width="700"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="CanResize"
+        MinHeight="1170" MinWidth="600"
+        Icon="Assets/ps-logo.png">
+
+    <Grid Background="{StaticResource SecondaryBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource DarkAccentColor}" Padding="20" 
+                BorderBrush="{StaticResource BorderColor}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal">
+                <!-- Small logo in header -->
+                <Image Source="Assets/ps-logo.png" 
+                       Width="30" 
+                       Height="25" 
+                       VerticalAlignment="Center"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       Stretch="Uniform"
+                       Margin="0,0,10,0"/>
+                <TextBlock Name="HeaderText" Text="Create New Project" FontSize="20" FontWeight="Bold" 
+                          Foreground="{StaticResource TextOnDark}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Form Content -->
+        <ScrollViewer Grid.Row="1" Margin="20" VerticalScrollBarVisibility="Auto">
+            <Border Background="{StaticResource CardBackground}" Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <!-- Project Name -->
+                    <TextBlock Text="Project Name *" FontWeight="SemiBold" Margin="0,0,0,5"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <TextBox Name="ProjectNameTextBox" Padding="12" Margin="0,0,0,15" FontSize="14"/>
+
+                    <!-- Company -->
+                    <TextBlock Text="Företag *" FontWeight="SemiBold" Margin="0,0,0,5"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <TextBox Name="CompanyTextBox" Padding="12" Margin="0,0,0,15" FontSize="14"/>
+
+                    <!-- Organization Number -->
+                    <TextBlock Text="Organisationsnummer" FontWeight="SemiBold" Margin="0,0,0,5"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <TextBox Name="OrganizationNumberTextBox" Padding="12" Margin="0,0,0,15" FontSize="14" 
+                             ToolTip="Format: 556123-4567"/>
+
+                    <!-- Address -->
+                    <TextBlock Text="Adress" FontWeight="SemiBold" Margin="0,0,0,5"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <TextBox Name="AddressTextBox" Padding="12" Margin="0,0,0,15" FontSize="14" 
+                             Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+
+                    <!-- Representative -->
+                    <TextBlock Text="Ombud" FontWeight="SemiBold" Margin="0,0,0,5"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <TextBox Name="RepresentativeTextBox" Padding="12" Margin="0,0,0,15" FontSize="14"/>
+
+                    <!-- Contact Information -->
+                    <TextBlock Text="Kontaktuppgifter" FontWeight="SemiBold" Margin="0,0,0,5"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <TextBox Name="ContactInfoTextBox" Padding="12" Margin="0,0,0,15" FontSize="14" 
+                             Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                             ToolTip="Email, telefon, etc."/>
+
+                    <!-- Billing Information -->
+                    <TextBlock Text="Faktureringsrutin/Märkning" FontWeight="SemiBold" Margin="0,0,0,5"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <TextBox Name="BillingInfoTextBox" Padding="12" Margin="0,0,0,15" FontSize="14" 
+                             Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+
+                    <!-- Account Manager -->
+                    <TextBlock Text="Kundansvarig *" FontWeight="SemiBold" Margin="0,0,0,5"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <ComboBox Name="AccountManagerComboBox" Padding="12" Margin="0,0,0,20" FontSize="14"
+                              DisplayMemberPath="FullName" SelectedValuePath="Id"/>
+
+                    <!-- Project Team -->
+                    <TextBlock Text="Project Team Members" FontWeight="SemiBold" Margin="0,0,0,10"
+                              Style="{StaticResource BodyTextStyle}"/>
+                    <Border Background="{StaticResource SecondaryBackground}" 
+                            BorderBrush="{StaticResource BorderColor}" BorderThickness="1" 
+                            CornerRadius="6" Padding="15" Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="Select employees to assign to this project:" FontSize="12" 
+                                      Foreground="{StaticResource TextSecondary}" Margin="0,0,0,10"/>
+                            <ItemsControl Name="EmployeeCheckList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Content="{Binding FullName}" 
+                                                  IsChecked="{Binding IsSelectedForProject, UpdateSourceTrigger=PropertyChanged}"
+                                                  Margin="0,3" FontSize="14" Padding="8,3,0,3"
+                                                  Foreground="{StaticResource TextPrimary}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Additional Project Details -->
+                    <Expander Header="Additional Project Details" Margin="0,0,0,15" IsExpanded="False">
+                        <Expander.Style>
+                            <Style TargetType="Expander">
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Padding" Value="10"/>
+                            </Style>
+                        </Expander.Style>
+                        <StackPanel Margin="0,15,0,0">
+                            <!-- Status -->
+                            <TextBlock Text="Status" FontWeight="SemiBold" Margin="0,0,0,5"
+                                      Style="{StaticResource BodyTextStyle}"/>
+                            <ComboBox Name="StatusComboBox" Padding="12" Margin="0,0,0,15" FontSize="14" SelectedIndex="0">
+                                <ComboBoxItem>Planning</ComboBoxItem>
+                                <ComboBoxItem>In Progress</ComboBoxItem>
+                                <ComboBoxItem>On Hold</ComboBoxItem>
+                                <ComboBoxItem>Completed</ComboBoxItem>
+                                <ComboBoxItem>Cancelled</ComboBoxItem>
+                            </ComboBox>
+
+                            <!-- Due Date -->
+                            <TextBlock Text="Due Date" FontWeight="SemiBold" Margin="0,0,0,5"
+                                      Style="{StaticResource BodyTextStyle}"/>
+                            <DatePicker Name="DueDatePicker" Padding="12" Margin="0,0,0,15" FontSize="14"/>
+
+                            <!-- Budget -->
+                            <TextBlock Text="Budget" FontWeight="SemiBold" Margin="0,0,0,5"
+                                      Style="{StaticResource BodyTextStyle}"/>
+                            <TextBox Name="BudgetTextBox" Padding="12" Margin="0,0,0,15" FontSize="14" 
+                                     ToolTip="e.g., $50,000 or 500,000 SEK"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- Required fields note -->
+                    <TextBlock Text="* Required fields" FontSize="12" FontStyle="Italic"
+                              Foreground="{StaticResource TextSecondary}" Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+
+        <!-- Button Panel -->
+        <Border Grid.Row="2" Background="{StaticResource PrimaryBackground}" Padding="20" 
+                BorderBrush="{StaticResource BorderColor}" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="SaveBtn" Content="Create Project" Click="SaveBtn_Click" 
+                        Width="130" Height="35" Margin="0,0,10,0"
+                        Style="{StaticResource PrimaryButtonStyle}" FontSize="14"/>
+                <Button Name="CancelBtn" Content="Cancel" Click="CancelBtn_Click" 
+                        Width="80" Height="35"
+                        Style="{StaticResource SecondaryButtonStyle}" FontSize="14"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

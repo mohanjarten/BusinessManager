@@ -1,0 +1,101 @@
+﻿<Window x:Class="BusinessManager.AddEmployeeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BusinessManager"
+        mc:Ignorable="d"
+        Title="Add New Employee - p|s BusinessManager" Height="760" Width="450"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Icon="Assets/ps-logo.png">
+
+    <Grid Background="{StaticResource SecondaryBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource DarkAccentColor}" Padding="20" BorderBrush="{StaticResource BorderColor}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal">
+                <!-- Small logo in header -->
+                <Image Source="Assets/ps-logo.png" 
+                       Width="30" 
+                       Height="25" 
+                       VerticalAlignment="Center"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       Stretch="Uniform"
+                       Margin="0,0,10,0"/>
+                <TextBlock Text="Add New Employee" FontSize="20" FontWeight="Bold" 
+                          Foreground="{StaticResource TextOnDark}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Form Content -->
+        <Border Grid.Row="1" Margin="20" Background="{StaticResource CardBackground}" 
+                Style="{StaticResource CardStyle}">
+            <StackPanel>
+                <!-- First Name -->
+                <TextBlock Text="First Name *" FontWeight="SemiBold" Margin="0,0,0,5"
+                          Style="{StaticResource BodyTextStyle}"/>
+                <TextBox Name="FirstNameTextBox" Padding="10" Margin="0,0,0,15" FontSize="14"/>
+
+                <!-- Last Name -->
+                <TextBlock Text="Last Name *" FontWeight="SemiBold" Margin="0,0,0,5"
+                          Style="{StaticResource BodyTextStyle}"/>
+                <TextBox Name="LastNameTextBox" Padding="10" Margin="0,0,0,15" FontSize="14"/>
+
+                <!-- Email -->
+                <TextBlock Text="Email Address *" FontWeight="SemiBold" Margin="0,0,0,5"
+                          Style="{StaticResource BodyTextStyle}"/>
+                <TextBox Name="EmailTextBox" Padding="10" Margin="0,0,0,15" FontSize="14"/>
+
+                <!-- Phone -->
+                <TextBlock Text="Phone Number" FontWeight="SemiBold" Margin="0,0,0,5"
+                          Style="{StaticResource BodyTextStyle}"/>
+                <TextBox Name="PhoneTextBox" Padding="10" Margin="0,0,0,15" FontSize="14"/>
+
+                <!-- Position -->
+                <TextBlock Text="Position *" FontWeight="SemiBold" Margin="0,0,0,5"
+                          Style="{StaticResource BodyTextStyle}"/>
+                <ComboBox Name="PositionComboBox" Padding="10" Margin="0,0,0,15" FontSize="14" IsEditable="True">
+                    <ComboBoxItem>Developer</ComboBoxItem>
+                    <ComboBoxItem>Senior Developer</ComboBoxItem>
+                    <ComboBoxItem>Project Manager</ComboBoxItem>
+                    <ComboBoxItem>UX Designer</ComboBoxItem>
+                    <ComboBoxItem>System Architect</ComboBoxItem>
+                    <ComboBoxItem>Business Analyst</ComboBoxItem>
+                    <ComboBoxItem>QA Engineer</ComboBoxItem>
+                    <ComboBoxItem>DevOps Engineer</ComboBoxItem>
+                </ComboBox>
+
+                <!-- Hire Date -->
+                <TextBlock Text="Hire Date *" FontWeight="SemiBold" Margin="0,0,0,5"
+                          Style="{StaticResource BodyTextStyle}"/>
+                <DatePicker Name="HireDatePicker" Padding="10" Margin="0,0,0,15" FontSize="14" 
+                           SelectedDate="{x:Static sys:DateTime.Now}"
+                           xmlns:sys="clr-namespace:System;assembly=mscorlib"/>
+
+                <!-- Required fields note -->
+                <TextBlock Text="* Required fields" FontSize="12" FontStyle="Italic"
+                          Foreground="{StaticResource TextSecondary}" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Button Panel -->
+        <Border Grid.Row="2" Background="{StaticResource PrimaryBackground}" Padding="20" 
+                BorderBrush="{StaticResource BorderColor}" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="SaveBtn" Content="Save Employee" Click="SaveBtn_Click" 
+                        Width="120" Height="35" Margin="0,0,10,0"
+                        Style="{StaticResource PrimaryButtonStyle}" FontSize="14"/>
+                <Button Name="CancelBtn" Content="Cancel" Click="CancelBtn_Click" 
+                        Width="80" Height="35"
+                        Style="{StaticResource SecondaryButtonStyle}" FontSize="14"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<AssemblyTitle>BusinessManager Pro</AssemblyTitle>
+		<AssemblyDescription>Complete Business Management Solution</AssemblyDescription>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Company>Your Company Name</Company>
+		<Product>BusinessManager Pro</Product>
+		<Copyright>Copyright © 2024</Copyright>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\ProStruct-logo.png" />
+	  <None Remove="Assets\ps-logo.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Assets\ProStruct-logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="Assets\ps-logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Resource>
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,704 @@
+﻿<Window x:Class="BusinessManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BusinessManager"
+        mc:Ignorable="d"
+        Title="p|s BusinessManager - Professional Edition" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Icon="Assets/ps-logo.png">
+
+    <Window.Resources>
+        <!-- Styles for time entry cells with missing note indicators -->
+        <Style x:Key="MondayTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MondayHasMissingNote}" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ErrorColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="Time entry requires a note"/>
+                    <Setter Property="Background" Value="{StaticResource Sten}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TuesdayTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TuesdayHasMissingNote}" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ErrorColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="Time entry requires a note"/>
+                    <Setter Property="Background" Value="{StaticResource Sten}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="WednesdayTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding WednesdayHasMissingNote}" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ErrorColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="Time entry requires a note"/>
+                    <Setter Property="Background" Value="{StaticResource Sten}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ThursdayTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ThursdayHasMissingNote}" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ErrorColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="Time entry requires a note"/>
+                    <Setter Property="Background" Value="{StaticResource Sten}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FridayTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding FridayHasMissingNote}" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ErrorColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="Time entry requires a note"/>
+                    <Setter Property="Background" Value="{StaticResource Sten}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SaturdayTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SaturdayHasMissingNote}" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ErrorColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="Time entry requires a note"/>
+                    <Setter Property="Background" Value="{StaticResource Sten}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SundayTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SundayHasMissingNote}" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ErrorColor}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="Time entry requires a note"/>
+                    <Setter Property="Background" Value="{StaticResource Sten}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Lock CheckBox Style with dynamic tooltip -->
+        <Style x:Key="LockCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="ToolTip" Value="{Binding LockTooltip}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource SecondaryBackground}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Navigation Panel with Company Colors -->
+        <Border Grid.Column="0" Background="{StaticResource SidebarBackground}" Padding="0">
+            <StackPanel>
+                <!-- Logo Section -->
+                <Border Background="{StaticResource Djup}" Padding="05" Margin="0,0,0,20" HorizontalAlignment="Left">
+                    <StackPanel HorizontalAlignment="Center">
+                        <!-- PNG Logo -->
+                        <Image Source="Assets/ProStruct-logo.png" 
+                               Width="150" 
+                               Height="40" 
+                               HorizontalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               Stretch="Uniform"/>
+                    </StackPanel>
+                </Border>
+
+                <Button Name="DashboardBtn" Content="Dashboard" Click="DashboardBtn_Click" 
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        Margin="0,0,0,2"/>
+
+                <Button Name="EmployeesBtn" Content="Employees" Click="EmployeesBtn_Click"
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        Margin="0,0,0,2"/>
+
+                <Button Name="ProjectsBtn" Content="Projects" Click="ProjectsBtn_Click"
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        Margin="0,0,0,2"/>
+
+                <Button Name="TimeTrackingBtn" Content="Time Tracking" Click="TimeTrackingBtn_Click"
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        Margin="0,0,0,2"/>
+
+                <Button Name="ExpensesBtn" Content="Expenses" Click="ExpensesBtn_Click"
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        Margin="0,0,0,2"/>
+
+                <Button Name="ReportsBtn" Content="Reports" Click="ReportsBtn_Click"
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        Margin="0,0,0,2"/>
+
+                <Button Name="ClientsBtn" Content="Clients" Click="ClientsBtn_Click"
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        Margin="0,0,0,2"/>
+
+                <!-- Separator -->
+                <Rectangle Height="1" Fill="{StaticResource AccentColor}" 
+                           Margin="15,20,15,20" Opacity="0.5"/>
+
+                <Button Name="SettingsBtn" Content="Settings" Click="SettingsBtn_Click"
+                        Style="{StaticResource NavigationButtonStyle}"/>
+                
+                <!-- Small Footer Logo -->
+                <Image Source="Assets/ps-logo.png" 
+                       Width="20" 
+                       Height="13" 
+                       HorizontalAlignment="Center"
+                       Margin="0,40,0,20"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       Stretch="Uniform"
+                       Opacity="0.6"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1" Background="{StaticResource PrimaryBackground}">
+            <!-- Dashboard Content -->
+            <ScrollViewer Name="DashboardContent" Visibility="Visible" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Dashboard Overview" 
+                              Style="{StaticResource HeaderTextStyle}"/>
+
+                    <!-- Stats Cards with Company Colors -->
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Active Projects Card -->
+                        <Border Grid.Column="0" Style="{StaticResource CardStyle}" Margin="0,0,10,0">
+                            <StackPanel>
+                                <TextBlock Text="Active Projects" Style="{StaticResource SecondaryTextStyle}"/>
+                                <TextBlock Name="ActiveProjectsCount" Text="12" 
+                                          FontSize="28" FontWeight="Bold" 
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Total Employees Card -->
+                        <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="0,0,10,0">
+                            <StackPanel>
+                                <TextBlock Text="Total Employees" Style="{StaticResource SecondaryTextStyle}"/>
+                                <TextBlock Name="TotalEmployeesCount" Text="28" 
+                                          FontSize="28" FontWeight="Bold"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Monthly Revenue Card -->
+                        <Border Grid.Column="2" Style="{StaticResource CardStyle}" Margin="0,0,10,0">
+                            <StackPanel>
+                                <TextBlock Text="Monthly Revenue" Style="{StaticResource SecondaryTextStyle}"/>
+                                <TextBlock Name="MonthlyRevenue" Text="$45,280" 
+                                          FontSize="28" FontWeight="Bold" 
+                                          Foreground="{StaticResource SuccessColor}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Hours Logged Card -->
+                        <Border Grid.Column="3" Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Hours Logged" Style="{StaticResource SecondaryTextStyle}"/>
+                                <TextBlock Name="HoursLoggedCount" Text="1,456" 
+                                          FontSize="28" FontWeight="Bold"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Recent Projects Table -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Recent Projects" Style="{StaticResource SubheaderTextStyle}"/>
+                            <DataGrid Name="ProjectsDataGrid" AutoGenerateColumns="False" 
+                                      CanUserAddRows="False" HeadersVisibility="Column" 
+                                      GridLinesVisibility="None" BorderThickness="0">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Project Name" 
+                                                        Binding="{Binding ProjectName}" Width="*"/>
+                                    <DataGridTextColumn Header="Client" 
+                                                        Binding="{Binding Client}" Width="150"/>
+                                    <DataGridTextColumn Header="Progress" 
+                                                        Binding="{Binding Progress}" Width="100"/>
+                                    <DataGridTextColumn Header="Status" 
+                                                        Binding="{Binding Status}" Width="100"/>
+                                    <DataGridTextColumn Header="Due Date" 
+                                                        Binding="{Binding DueDate}" Width="100"/>
+                                    <DataGridTextColumn Header="Budget" 
+                                                        Binding="{Binding Budget}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Employees Content -->
+            <ScrollViewer Name="EmployeesContent" Visibility="Collapsed" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Employee Management" Style="{StaticResource HeaderTextStyle}"/>
+
+                    <!-- Employee Controls -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                        <Button Name="AddEmployeeBtn" Content="Add New Employee" Click="AddEmployeeBtn_Click"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                    </StackPanel>
+
+                    <!-- Employees List -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="All Employees" Style="{StaticResource SubheaderTextStyle}"/>
+                            <DataGrid Name="EmployeesDataGrid" AutoGenerateColumns="False" 
+                                      CanUserAddRows="False" HeadersVisibility="Column" 
+                                      GridLinesVisibility="All" BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                                    <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="120"/>
+                                    <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="120"/>
+                                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
+                                    <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="120"/>
+                                    <DataGridTextColumn Header="Position" Binding="{Binding Position}" Width="150"/>
+                                    <DataGridTextColumn Header="Hire Date" Binding="{Binding HireDate, StringFormat=yyyy-MM-dd}" Width="100"/>
+                                    <DataGridCheckBoxColumn Header="Active" Binding="{Binding IsActive}" Width="60"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Projects Content -->
+            <ScrollViewer Name="ProjectsContent" Visibility="Collapsed" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Project Management" Style="{StaticResource HeaderTextStyle}"/>
+
+                    <!-- Project Controls -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                        <Button Name="CreateProjectBtn" Content="Create New Project" Click="AddProjectBtn_Click"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                    </StackPanel>
+
+                    <!-- Projects List -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="All Projects" Style="{StaticResource SubheaderTextStyle}"/>
+                            <DataGrid Name="ProjectsManagementDataGrid" AutoGenerateColumns="False" 
+                                      CanUserAddRows="False" HeadersVisibility="Column" 
+                                      GridLinesVisibility="All" BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                                    <DataGridTextColumn Header="Project Name" Binding="{Binding ProjectName}" Width="150"/>
+                                    <DataGridTextColumn Header="Company" Binding="{Binding Company}" Width="150"/>
+                                    <DataGridTextColumn Header="Account Manager" Binding="{Binding AccountManager.FullName}" Width="120"/>
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                                    <DataGridTextColumn Header="Progress" Binding="{Binding Progress}" Width="80"/>
+                                    <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate}" Width="100"/>
+                                    <DataGridTextColumn Header="Budget" Binding="{Binding Budget}" Width="100"/>
+                                    <DataGridTemplateColumn Header="Actions" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Edit" Click="EditProjectBtn_Click"
+                                                        Background="{StaticResource DarkAccentColor}" 
+                                                        Foreground="{StaticResource TextOnDark}" 
+                                                        BorderThickness="0"
+                                                        Padding="5" Cursor="Hand" FontSize="11"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Time Tracking Content -->
+            <ScrollViewer Name="TimeTrackingContent" Visibility="Collapsed" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Time Tracking" Style="{StaticResource HeaderTextStyle}"/>
+
+                    <!-- Week Navigation and Controls -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Name="PreviousWeekBtn" Content="◀" Click="PreviousWeekBtn_Click" 
+                                Width="30" Margin="0,0,5,0" 
+                                Background="{StaticResource Berg}" 
+                                Foreground="{StaticResource TextOnDark}" 
+                                BorderThickness="0"/>
+                        <TextBlock Name="CurrentWeekDisplay" Text="Week 48, 2024" 
+                                  FontSize="16" FontWeight="Bold" VerticalAlignment="Center" 
+                                  Width="300" TextAlignment="Center" 
+                                  Foreground="{StaticResource TextPrimary}"/>
+                        <Button Name="NextWeekBtn" Content="▶" Click="NextWeekBtn_Click" 
+                                Width="30" Margin="5,0,20,0" 
+                                Background="{StaticResource Berg}" 
+                                Foreground="{StaticResource TextOnDark}" 
+                                BorderThickness="0"/>
+
+                        <Button Name="AddTimesheetProjectBtn" Content="Add Project" Click="AddTimesheetProjectBtn_Click"
+                                Margin="0,0,5,0" Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button Name="SaveTimesheetBtn" Content="Save Timesheet" Click="SaveTimesheetBtn_Click"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button Name="ValidateAllBtn" Content="Validate All" Click="ValidateAllBtn_Click"
+                                Margin="5,0,0,0" Style="{StaticResource SecondaryButtonStyle}">
+                            <Button.ToolTip>
+                                <ToolTip>Check all time entries for missing notes</ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Week Summary -->
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Week Summary" Style="{StaticResource SecondaryTextStyle}"/>
+                                <TextBlock Name="WeekSummaryText" Text="0 projects • 0 hours" 
+                                          FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Total Hours" Style="{StaticResource SecondaryTextStyle}"/>
+                                <TextBlock Name="TotalWeekHours" Text="Total: 0 hours" 
+                                          FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Daily Average" Style="{StaticResource SecondaryTextStyle}"/>
+                                <TextBlock Name="DailyAverageText" Text="0.0 hours/day" 
+                                          FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="3">
+                                <TextBlock Text="Status" Style="{StaticResource SecondaryTextStyle}"/>
+                                <TextBlock Name="WeekStatusText" Text="Empty" 
+                                          FontWeight="Bold" Foreground="{StaticResource WarningColor}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Timesheet Grid -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <DataGrid Name="TimesheetDataGrid" Grid.Row="0" AutoGenerateColumns="False" 
+                                      CanUserAddRows="False" GridLinesVisibility="All"
+                                      BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
+                                <!-- Replace the DataGrid.Columns section in your MainWindow.xaml TimeTrackingContent -->
+                                <DataGrid.Columns>
+                                    <!-- Project Column -->
+                                    <DataGridTemplateColumn Header="Project" Width="200">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ProjectsList}"
+                          SelectedValue="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="ProjectName"
+                          SelectedValuePath="ProjectName"
+                          IsEnabled="{Binding IsNotLocked}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Task Column -->
+                                    <DataGridTemplateColumn Header="Task" Width="150">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectedValue="{Binding TaskName, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{Binding IsNotLocked}">
+                                                    <ComboBoxItem>Ritarbete</ComboBoxItem>
+                                                    <ComboBoxItem>Beräkningar</ComboBoxItem>
+                                                    <ComboBoxItem>Administration</ComboBoxItem>
+                                                    <ComboBoxItem>Möte</ComboBoxItem>
+                                                    <ComboBoxItem>Granskning</ComboBoxItem>
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Time Code Column -->
+                                    <DataGridTemplateColumn Header="Time Code" Width="150">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectedValue="{Binding TimeCode, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{Binding IsNotLocked}">
+                                                    <ComboBoxItem>Ordinarie arbetstid</ComboBoxItem>
+                                                    <ComboBoxItem>Övertid</ComboBoxItem>
+                                                    <ComboBoxItem>Semester</ComboBoxItem>
+                                                    <ComboBoxItem>Sjuk</ComboBoxItem>
+                                                    <ComboBoxItem>Vård av barn</ComboBoxItem>
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Monday Column -->
+                                    <DataGridTemplateColumn Header="Monday" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox Grid.Column="0" Text="{Binding Monday, UpdateSourceTrigger=PropertyChanged}" 
+                             PreviewTextInput="NumberTextBox_PreviewTextInput"
+                             IsEnabled="{Binding IsNotLocked}"
+                             Style="{StaticResource MondayTextBoxStyle}"/>
+                                                    <Button Grid.Column="1" Content="📝" Width="20" Height="20" 
+                            Click="NotebookBtn_Click" Tag="Monday" 
+                            Background="Transparent" BorderThickness="0"
+                            Cursor="Hand" ToolTip="Add/Edit note"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Tuesday Column -->
+                                    <DataGridTemplateColumn Header="Tuesday" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox Grid.Column="0" Text="{Binding Tuesday, UpdateSourceTrigger=PropertyChanged}" 
+                             PreviewTextInput="NumberTextBox_PreviewTextInput"
+                             IsEnabled="{Binding IsNotLocked}"
+                             Style="{StaticResource TuesdayTextBoxStyle}"/>
+                                                    <Button Grid.Column="1" Content="📝" Width="20" Height="20" 
+                            Click="NotebookBtn_Click" Tag="Tuesday" 
+                            Background="Transparent" BorderThickness="0"
+                            Cursor="Hand" ToolTip="Add/Edit note"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Wednesday Column -->
+                                    <DataGridTemplateColumn Header="Wednesday" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox Grid.Column="0" Text="{Binding Wednesday, UpdateSourceTrigger=PropertyChanged}" 
+                             PreviewTextInput="NumberTextBox_PreviewTextInput"
+                             IsEnabled="{Binding IsNotLocked}"
+                             Style="{StaticResource WednesdayTextBoxStyle}"/>
+                                                    <Button Grid.Column="1" Content="📝" Width="20" Height="20" 
+                            Click="NotebookBtn_Click" Tag="Wednesday" 
+                            Background="Transparent" BorderThickness="0"
+                            Cursor="Hand" ToolTip="Add/Edit note"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Thursday Column -->
+                                    <DataGridTemplateColumn Header="Thursday" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox Grid.Column="0" Text="{Binding Thursday, UpdateSourceTrigger=PropertyChanged}" 
+                             PreviewTextInput="NumberTextBox_PreviewTextInput"
+                             IsEnabled="{Binding IsNotLocked}"
+                             Style="{StaticResource ThursdayTextBoxStyle}"/>
+                                                    <Button Grid.Column="1" Content="📝" Width="20" Height="20" 
+                            Click="NotebookBtn_Click" Tag="Thursday" 
+                            Background="Transparent" BorderThickness="0"
+                            Cursor="Hand" ToolTip="Add/Edit note"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Friday Column -->
+                                    <DataGridTemplateColumn Header="Friday" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox Grid.Column="0" Text="{Binding Friday, UpdateSourceTrigger=PropertyChanged}" 
+                             PreviewTextInput="NumberTextBox_PreviewTextInput"
+                             IsEnabled="{Binding IsNotLocked}"
+                             Style="{StaticResource FridayTextBoxStyle}"/>
+                                                    <Button Grid.Column="1" Content="📝" Width="20" Height="20" 
+                            Click="NotebookBtn_Click" Tag="Friday" 
+                            Background="Transparent" BorderThickness="0"
+                            Cursor="Hand" ToolTip="Add/Edit note"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Saturday Column -->
+                                    <DataGridTemplateColumn Header="Saturday" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox Grid.Column="0" Text="{Binding Saturday, UpdateSourceTrigger=PropertyChanged}" 
+                             PreviewTextInput="NumberTextBox_PreviewTextInput"
+                             IsEnabled="{Binding IsNotLocked}"
+                             Style="{StaticResource SaturdayTextBoxStyle}"/>
+                                                    <Button Grid.Column="1" Content="📝" Width="20" Height="20" 
+                            Click="NotebookBtn_Click" Tag="Saturday" 
+                            Background="Transparent" BorderThickness="0"
+                            Cursor="Hand" ToolTip="Add/Edit note"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Sunday Column -->
+                                    <DataGridTemplateColumn Header="Sunday" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox Grid.Column="0" Text="{Binding Sunday, UpdateSourceTrigger=PropertyChanged}" 
+                             PreviewTextInput="NumberTextBox_PreviewTextInput"
+                             IsEnabled="{Binding IsNotLocked}"
+                             Style="{StaticResource SundayTextBoxStyle}"/>
+                                                    <Button Grid.Column="1" Content="📝" Width="20" Height="20" 
+                            Click="NotebookBtn_Click" Tag="Sunday" 
+                            Background="Transparent" BorderThickness="0"
+                            Cursor="Hand" ToolTip="Add/Edit note"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Week Total Column -->
+                                    <DataGridTextColumn Header="Total" Binding="{Binding WeekTotal}" 
+                        Width="60" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="Foreground" Value="{StaticResource DarkAccentColor}"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <!-- Lock Column -->
+                                    <DataGridTemplateColumn Header="Lock" Width="50">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding IsLocked}" 
+                          Checked="LockCheckBox_Changed"
+                          Unchecked="LockCheckBox_Changed"
+                          Style="{StaticResource LockCheckBoxStyle}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Delete Column -->
+                                    <DataGridTemplateColumn Header="Delete" Width="60">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="🗑️" Click="DeleteTimesheetRow_Click"
+                        Background="Transparent" BorderThickness="0"
+                        Cursor="Hand" ToolTip="Delete this row"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <!-- Totals Row -->
+                            <Grid Grid.Row="1" Margin="0,5,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="60"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Daily Totals:" FontWeight="Bold" 
+                                          HorizontalAlignment="Right" Margin="0,0,10,0"
+                                          Foreground="{StaticResource TextPrimary}"/>
+                                <TextBlock Grid.Column="3" Name="MondayTotal" Text="0.0" 
+                                          FontWeight="Bold" HorizontalAlignment="Center"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                                <TextBlock Grid.Column="4" Name="TuesdayTotal" Text="0.0" 
+                                          FontWeight="Bold" HorizontalAlignment="Center"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                                <TextBlock Grid.Column="5" Name="WednesdayTotal" Text="0.0" 
+                                          FontWeight="Bold" HorizontalAlignment="Center"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                                <TextBlock Grid.Column="6" Name="ThursdayTotal" Text="0.0" 
+                                          FontWeight="Bold" HorizontalAlignment="Center"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                                <TextBlock Grid.Column="7" Name="FridayTotal" Text="0.0" 
+                                          FontWeight="Bold" HorizontalAlignment="Center"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                                <TextBlock Grid.Column="8" Name="SaturdayTotal" Text="0.0" 
+                                          FontWeight="Bold" HorizontalAlignment="Center"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                                <TextBlock Grid.Column="9" Name="SundayTotal" Text="0.0" 
+                                          FontWeight="Bold" HorizontalAlignment="Center"
+                                          Foreground="{StaticResource DarkAccentColor}"/>
+                                <TextBlock Grid.Column="10" Name="WeekGrandTotal" Text="0.0" 
+                                          FontWeight="Bold" HorizontalAlignment="Center" 
+                                          Foreground="{StaticResource SuccessColor}"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>
