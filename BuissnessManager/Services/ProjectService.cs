@@ -55,33 +55,9 @@ namespace BusinessManager.Services
                     Budget = "$25,000"
                 }
             };
-            
-            // Assign employees to projects with hourly rates
-            _projects[0].AssignedEmployees.Add(new ProjectEmployee
-            {
-                Employee = _employeeService.GetEmployeeByName("Johan", "Svensson"),
-                ProjectHourlyRate = 750,
-                IsSelectedForProject = true
-            });
-            _projects[0].AssignedEmployees.Add(new ProjectEmployee
-            {
-                Employee = _employeeService.GetEmployeeByName("Malin", "Lindberg"),
-                ProjectHourlyRate = 700,
-                IsSelectedForProject = true
-            });
 
-            _projects[1].AssignedEmployees.Add(new ProjectEmployee
-            {
-                Employee = _employeeService.GetEmployeeByName("Markus", "Nilsson"),
-                ProjectHourlyRate = 900,
-                IsSelectedForProject = true
-            });
-            _projects[1].AssignedEmployees.Add(new ProjectEmployee
-            {
-                Employee = _employeeService.GetEmployeeByName("Jon", "Eriksson"),
-                ProjectHourlyRate = 650,
-                IsSelectedForProject = true
-            });
+            // DO NOT auto-assign employees here
+            // Let users assign them manually through the project creation interface
         }
 
         public void AddProject(Project project)

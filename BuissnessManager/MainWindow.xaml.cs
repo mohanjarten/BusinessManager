@@ -102,32 +102,8 @@ namespace BusinessManager
             // Initialize weekly timesheets storage
             _weeklyTimesheets = new Dictionary<DateTime, ObservableCollection<TimesheetRow>>();
 
-            // Create sample data for current week
-            var currentWeekData = new ObservableCollection<TimesheetRow>
-            {
-                new TimesheetRow { ProjectName = "Website Redesign", TaskName = "Ritarbete", TimeCode = "Ordinarie arbetstid", EmployeeName = "Johan Mårtensson", Monday = "8", Tuesday = "8", Wednesday = "6", Thursday = "", Friday = "", Saturday = "", Sunday = "" },
-                new TimesheetRow { ProjectName = "Mobile App Development", TaskName = "Beräkningar", TimeCode = "Ordinarie arbetstid", EmployeeName = "Johan Mårtensson", Monday = "", Tuesday = "", Wednesday = "2", Thursday = "8", Friday = "8", Saturday = "", Sunday = "" }
-            };
-
-            // Add sample data for current week
-            _weeklyTimesheets[_currentWeekStart] = currentWeekData;
-
-            // Create sample data for last week (for demo purposes)
-            var lastWeek = _currentWeekStart.AddDays(-7);
-            var lastWeekData = new ObservableCollection<TimesheetRow>
-            {
-                new TimesheetRow { ProjectName = "Database Migration", TaskName = "Administration", TimeCode = "Ordinarie arbetstid", EmployeeName = "Johan Mårtensson", Monday = "4", Tuesday = "6", Wednesday = "8", Thursday = "8", Friday = "4", Saturday = "", Sunday = "" },
-                new TimesheetRow { ProjectName = "ERP System Setup", TaskName = "Möte", TimeCode = "Sjuk", EmployeeName = "Johan Mårtensson", Monday = "4", Tuesday = "2", Wednesday = "", Thursday = "", Friday = "4", Saturday = "", Sunday = "" }
-            };
-            _weeklyTimesheets[lastWeek] = lastWeekData;
-
-            // Create sample data for next week (for demo purposes)
-            var nextWeek = _currentWeekStart.AddDays(7);
-            var nextWeekData = new ObservableCollection<TimesheetRow>
-            {
-                new TimesheetRow { ProjectName = "Mobile App Development", TaskName = "Granskning", TimeCode = "Ordinarie arbetstid", EmployeeName = "Johan Mårtensson", Monday = "", Tuesday = "", Wednesday = "", Thursday = "", Friday = "", Saturday = "", Sunday = "" }
-            };
-            _weeklyTimesheets[nextWeek] = nextWeekData;
+            // Create empty timesheet for current week (no sample data)
+            _weeklyTimesheets[_currentWeekStart] = new ObservableCollection<TimesheetRow>();
 
             // Load current week timesheet
             LoadTimesheetForCurrentWeek();
@@ -509,12 +485,34 @@ namespace BusinessManager
                 return;
             }
 
+            // Check if Johan is assigned to any projects
+            var currentUser = UserSessionService.Instance.CurrentUserName;
+            var hasProjectAssignments = _projectService.Projects.Any(p =>
+                p.AssignedEmployees.Any(pe => pe.Employee?.FullName == currentUser));
+
+            if (!hasProjectAssignments)
+            {
+                var result = MessageBox.Show(
+                    $"{currentUser} is not assigned to any projects with hourly rates!\n\n" +
+                    "Please go to Projects and:\n" +
+                    "1. Create a new project OR edit an existing project\n" +
+                    "2. Check the box next to your name in the team selection\n" +
+                    "3. Set your hourly rate (kr/h)\n\n" +
+                    "Do you want to continue anyway? (Upparbetat will show 0 kr)",
+                    "No Project Assignment",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.No)
+                    return;
+            }
+
             var newRow = new TimesheetRow
             {
                 ProjectName = _timesheetProjects.FirstOrDefault()?.ProjectName ?? "",
                 TaskName = "Ritarbete", // Default to first task option
                 TimeCode = "Ordinarie arbetstid", // Default to normal working time
-                EmployeeName = UserSessionService.Instance.CurrentUserName, // Use logged-in user
+                EmployeeName = currentUser, // Use logged-in user
                 Monday = "",
                 Tuesday = "",
                 Wednesday = "",
@@ -697,7 +695,14 @@ namespace BusinessManager
 
                 // Find the actual project from project service to get hourly rates
                 var actualProject = _projectService.Projects.FirstOrDefault(p => p.ProjectName == timesheetProject.ProjectName);
-                if (actualProject?.AssignedEmployees == null) continue;
+                if (actualProject?.AssignedEmployees == null || !actualProject.AssignedEmployees.Any())
+                {
+                    // No employees assigned to this project, set to 0
+                    timesheetProject.Upparbetat = 0;
+                    if (actualProject != null)
+                        actualProject.Upparbetat = 0;
+                    continue;
+                }
 
                 // Calculate across all weekly timesheets
                 foreach (var weeklyTimesheet in _weeklyTimesheets.Values)
@@ -720,18 +725,33 @@ namespace BusinessManager
 
                         if (projectEmployee?.Employee != null)
                         {
-                            // Calculate total hours for this row
-                            var totalHours = row.WeekTotalValue;
+                            // Calculate for each day individually
+                            var days = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
-                            // Add to total (hours * hourly rate)
-                            totalUpparbetat += (decimal)totalHours * projectEmployee.ProjectHourlyRate;
+                            foreach (var day in days)
+                            {
+                                var dayHours = row.GetDayValue(day);
+                                if (dayHours > 0)
+                                {
+                                    // Add to total (day hours * hourly rate)
+                                    totalUpparbetat += (decimal)dayHours * projectEmployee.ProjectHourlyRate;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Employee not assigned to this project - show warning or ignore
+                            System.Diagnostics.Debug.WriteLine($"Warning: {row.EmployeeName} is not assigned to project {timesheetProject.ProjectName}");
                         }
                     }
                 }
 
                 // Update both timesheet project and actual project
                 timesheetProject.Upparbetat = totalUpparbetat;
-                actualProject.Upparbetat = totalUpparbetat;
+                if (actualProject != null)
+                {
+                    actualProject.Upparbetat = totalUpparbetat;
+                }
             }
         }
 
