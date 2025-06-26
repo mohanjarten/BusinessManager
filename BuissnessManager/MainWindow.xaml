@@ -327,8 +327,8 @@
                         <StackPanel>
                             <TextBlock Text="All Projects" Style="{StaticResource SubheaderTextStyle}"/>
                             <DataGrid Name="ProjectsManagementDataGrid" AutoGenerateColumns="False" 
-                                      CanUserAddRows="False" HeadersVisibility="Column" 
-                                      GridLinesVisibility="All" BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
+                          CanUserAddRows="False" HeadersVisibility="Column" 
+                          GridLinesVisibility="All" BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                                     <DataGridTextColumn Header="Project Name" Binding="{Binding ProjectName}" Width="150"/>
@@ -338,14 +338,24 @@
                                     <DataGridTextColumn Header="Progress" Binding="{Binding Progress}" Width="80"/>
                                     <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate}" Width="100"/>
                                     <DataGridTextColumn Header="Budget" Binding="{Binding Budget}" Width="100"/>
+                                    <!-- ADD THIS NEW COLUMN: -->
+                                    <DataGridTextColumn Header="Upparbetat" Binding="{Binding UpparbetatDisplay}" Width="120">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Right"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                <Setter Property="Foreground" Value="{StaticResource SuccessColor}"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
                                     <DataGridTemplateColumn Header="Actions" Width="80">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Button Content="Edit" Click="EditProjectBtn_Click"
-                                                        Background="{StaticResource DarkAccentColor}" 
-                                                        Foreground="{StaticResource TextOnDark}" 
-                                                        BorderThickness="0"
-                                                        Padding="5" Cursor="Hand" FontSize="11"/>
+                                            Background="{StaticResource DarkAccentColor}" 
+                                            Foreground="{StaticResource TextOnDark}" 
+                                            BorderThickness="0"
+                                            Padding="5" Cursor="Hand" FontSize="11"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -452,19 +462,22 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <!-- Employee Column -->
-                                    <DataGridTemplateColumn Header="Anställd" Width="150">
+                                    <!-- Task Column (NO EMPLOYEE COLUMN) -->
+                                    <DataGridTemplateColumn Header="Task" Width="150">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=EmployeesList}"
-                          SelectedValue="{Binding EmployeeName, UpdateSourceTrigger=PropertyChanged}"
-                          DisplayMemberPath="FullName"
-                          SelectedValuePath="FullName"
-                          IsEnabled="{Binding IsNotLocked}"/>
+                                                <ComboBox SelectedValue="{Binding TaskName, UpdateSourceTrigger=PropertyChanged}"
+                          IsEnabled="{Binding IsNotLocked}">
+                                                    <ComboBoxItem>Ritarbete</ComboBoxItem>
+                                                    <ComboBoxItem>Beräkningar</ComboBoxItem>
+                                                    <ComboBoxItem>Administration</ComboBoxItem>
+                                                    <ComboBoxItem>Möte</ComboBoxItem>
+                                                    <ComboBoxItem>Granskning</ComboBoxItem>
+                                                </ComboBox>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                   
+
                                     <!-- Task Column -->
                                     <DataGridTemplateColumn Header="Task" Width="150">
                                         <DataGridTemplateColumn.CellTemplate>

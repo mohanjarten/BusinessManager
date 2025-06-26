@@ -29,6 +29,14 @@ namespace BusinessManager.Models
             set { _id = value; OnPropertyChanged(nameof(Id)); }
         }
 
+        public decimal Upparbetat
+        {
+            get => _upparbetat;
+            set { _upparbetat = value; OnPropertyChanged(nameof(Upparbetat)); OnPropertyChanged(nameof(UpparbetatDisplay)); }
+        }
+
+        public string UpparbetatDisplay => $"{Upparbetat:N0} kr";
+
         public string ProjectName
         {
             get => _projectName;

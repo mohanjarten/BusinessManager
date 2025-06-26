@@ -14,6 +14,50 @@ using BusinessManager.Services;
 
 namespace BusinessManager
 {
+    public MainWindow()
+    {
+        InitializeComponent();
+        InitializeData();
+        LoadDashboardData();
+        LoadTimesheetData();
+
+        // Set DataContext for binding
+        this.DataContext = this;
+
+        // Login Johan Mårtensson automatically
+        LoginUser();
+    }
+
+    private void LoginUser()
+    {
+        // Find Johan Mårtensson in the employee list and log him in
+        var johanMartensson = new Employee
+        {
+            Id = 999,
+            FirstName = "Johan",
+            LastName = "Mårtensson",
+            Email = "johan.martensson@company.com",
+            Phone = "070-555-0123",
+            Position = "Utvecklare",
+            HireDate = DateTime.Now,
+            IsActive = true,
+            EmergencyContact = "Anna Mårtensson",
+            EmergencyPhone = "070-555-0124"
+        };
+
+        // Add Johan to employee service if not exists
+        if (!_employeeService.Employees.Any(e => e.FirstName == "Johan" && e.LastName == "Mårtensson"))
+        {
+            _employeeService.AddEmployee(johanMartensson);
+        }
+        else
+        {
+            johanMartensson = _employeeService.Employees.First(e => e.FirstName == "Johan" && e.LastName == "Mårtensson");
+        }
+
+        // Login Johan
+        UserSessionService.Instance.Login(johanMartensson);
+    }
     public partial class MainWindow : Window
     {
         // Current week tracking
@@ -488,16 +532,12 @@ namespace BusinessManager
                 return;
             }
 
-            // Get the first available employee as default
-            var defaultEmployee = _employeeService?.Employees?.FirstOrDefault();
-            var defaultEmployeeName = defaultEmployee?.FullName ?? "Unknown Employee";
-
             var newRow = new TimesheetRow
             {
                 ProjectName = _timesheetProjects.FirstOrDefault()?.ProjectName ?? "",
                 TaskName = "Ritarbete", // Default to first task option
                 TimeCode = "Ordinarie arbetstid", // Default to normal working time
-                EmployeeName = defaultEmployeeName, // Set a valid employee name
+                EmployeeName = UserSessionService.Instance.CurrentUserName, // Use logged-in user
                 Monday = "",
                 Tuesday = "",
                 Wednesday = "",
@@ -510,8 +550,8 @@ namespace BusinessManager
             newRow.PropertyChanged += TimesheetRow_PropertyChanged;
             _timesheetRows.Add(newRow);
 
-            // Only update summary, don't calculate Upparbetat yet (no hours entered)
-            UpdateWeekSummary();
+            // Update summary and calculate Upparbetat
+            UpdateWeekSummaryAndCalculateUpparbetat();
 
             // Focus on the new row
             TimesheetDataGrid.SelectedItem = newRow;
@@ -709,7 +749,9 @@ namespace BusinessManager
                     }
                 }
 
+                // Update both timesheet project and actual project
                 timesheetProject.Upparbetat = totalUpparbetat;
+                actualProject.Upparbetat = totalUpparbetat;
             }
         }
 
@@ -970,12 +1012,6 @@ namespace BusinessManager
         {
             get => _timeCode;
             set { _timeCode = value; OnPropertyChanged(nameof(TimeCode)); }
-        }
-
-        public string EmployeeName
-        {
-            get => _employeeName;
-            set { _employeeName = value; OnPropertyChanged(nameof(EmployeeName)); }
         }
 
         public string EmployeeName
